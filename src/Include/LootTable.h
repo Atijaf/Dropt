@@ -12,7 +12,7 @@ namespace Core
 	/// <typeparam name="LootType"> The type of loot being stored (Armor, Weapons, etc..)</typeparam>
 	/// <typeparam name="Variant"> How the Loot Table is obtained (If stored within another table)</typeparam>
 	/// <typeparam name="Obtainability"> How many times @ObtainLoot() can be called on this object</typeparam>
-	template<typename LootType, Variance Variant = Variance::Chance, Identifiers Obtainability = Identifiers::Common>
+	template<typename LootType, Variance Variant = Variance::Chance, Obtainabilities Obtainability = Obtainabilities::Common>
 	class LootTable : public LootContainer<LootType, Variant, Obtainability>
 	{
 	public:

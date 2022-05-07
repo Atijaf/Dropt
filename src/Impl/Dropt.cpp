@@ -15,13 +15,14 @@ int main()
 
 	Armor TheActualLoot("Nested Armor");
 
-	ElementLoot<Armor, Variance::Chance, Identifiers::Common> ArmorLoot(&TheActualLoot);
-	LootBag<Armor, Variance::Chance, Identifiers::Common, Variance::Chance> NestedArmorBag;
+	ElementLoot<Armor, Variance::Chance, Obtainabilities::Common> ArmorLoot(&TheActualLoot);
+	LootBag<Armor, Variance::Chance, Obtainabilities::Common, Variance::Chance> NestedArmorBag;
 
 
-	LootBag<Armor, Variance::Chance, Identifiers::Common, Variance::Chance> ArmorBag;
-	NestedArmorBag.AddLoot<Identifiers::Common>(&ArmorLoot);
-	ArmorBag.AddNestedLoot<Identifiers::Common>(&NestedArmorBag);
+	LootBag<Armor, Variance::Chance, Obtainabilities::Common, Variance::Chance> ArmorBag;
+
+	NestedArmorBag.AddLoot(&ArmorLoot);
+	ArmorBag.AddLoot(&NestedArmorBag);
 
 
 	std::list<Armor*> ObtainedArmor;

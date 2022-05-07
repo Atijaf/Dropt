@@ -1,29 +1,30 @@
 #pragma once
-#include "LootDispatcherDefinition.h"
-#include "LootDispatcherIdentity.h"
 #include "Loot.h"
-#include "LootContainer.h"
 
 namespace impl
 {
 	/// <summary>
 	/// </summary>
 	/// <param name="Loot Type">:		The type defined by user (ie. Money, Weapon, Armor..) </param>
-	/// <param name="Bag Controller">:	Defines if this Loot Bag is obtained by Chance, Schedule, Interval, or constantly </param>
-	/// <param name="Bag Identity">:	Defines if this bag is Unique, Variable, or Common</param>
+	/// <param name="Variant">:			Is this LootBag obtained by Chance, Interval, or constantly </param>
+	/// <param name="Obtainability">:	Defines if this bag is Unique, Variable, or Common</param>
+	/// <param name="ContentVariant">:	Defines if the contents of this bag are obtained by Chance, Interval, or Constantly</param>
 	template<	typename LootType,
-				Variance BagController, 
-				Identifiers BagIdentity>
-	class LootBag : public LootContainer<LootType, BagController, BagIdentity>
+				Variance Variant, 
+				Obtainabilities Obtainability,
+				Variance ContentVariant>
+	class LootBag : public CoreLoot<LootType, Variant, Obtainability>
 	{
 	public:
 
-		void AddLoot(ElementLoot<LootType,LootCommonality>* _Loot) {
-			this->LootArray[0] = _Loot;
-		}
-
-		void AddNestedLoot(CoreLootContainer<LootType, LootCommonality>* NestedLoot) {
-			this->LootArray[0] = NestedLoot;
+		/// <summary>
+		/// Adds any loot that is derived from CoreLoot
+		/// </summary>
+		/// <param name="ObjectObtainability">: Template Parameter, Unique, Variable, or Common</param>
+		/// <param name="Loot">: The Loot Being added </param>
+		template<Obtainabilities ObjectObtainability>
+		void AddLoot(CoreLoot<LootType,ContentVariant, ObjectObtainability>* Loot) {
+			this->LootArray[0] = Loot;
 		}
 
 	protected:
@@ -33,8 +34,8 @@ namespace impl
 			return true;
 		};
 
-
-		CoreLoot<LootType, ContentController>** LootArray = new CoreLoot<LootType, ContentController>*[1];// nullptr;
+		// Generic array that contains CoreLoot Objects with varying Obtainability definitions
+		CoreLootContainer<LootType, ContentVariant>** LootArray = new CoreLootContainer<LootType, ContentVariant>*[1];// nullptr;
 	};
 
 

@@ -95,9 +95,8 @@
     <ClInclude Include="src\Include\Dispatch.h" />
     <ClInclude Include="src\Include\Loot.h" />
     <ClInclude Include="src\Include\LootBag.h" />
-    <ClInclude Include="src\Include\LootContainer.h" />
     <ClInclude Include="src\Include\LootDispatcherDefinition.h" />
-    <ClInclude Include="src\Include\LootDispatcherIdentity.h" />
+    <ClInclude Include="src\Include\LootObtainabilityController.h" />
     <ClInclude Include="src\Include\LootTable.h" />
     <ClInclude Include="src\Include\Types.h" />
   </ItemGroup>

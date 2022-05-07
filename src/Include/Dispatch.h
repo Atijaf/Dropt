@@ -32,6 +32,6 @@ namespace impl
 	protected:
 
 		virtual bool GetLoot(std::list<void*>& OutLoot) = 0;
-		virtual bool ShouldRemoveLootFromContain() = 0;
+		virtual bool ShouldRemoveFromContainer() const = 0;
 	};
 }

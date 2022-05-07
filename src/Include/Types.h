@@ -4,7 +4,7 @@ namespace impl
 {
 	// These can be used to define a LootBag and/or Loot, 
 	// and they define the loot they are attached to (Ie. a unique LootBag can only be grabbed from once)
-	enum class Identifiers
+	enum class Obtainabilities
 	{
 		Unique,		// Can be obtained once
 		Variable,	// Can be obtained x times

@@ -27,19 +27,16 @@
     <ClInclude Include="src\Include\LootDispatcherDefinition.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Include\LootDispatcherIdentity.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Include\Loot.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Include\CoreLoot.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Include\LootContainer.h">
+    <ClInclude Include="src\Include\LootTable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Include\LootTable.h">
+    <ClInclude Include="src\Include\LootObtainabilityController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

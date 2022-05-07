@@ -1,26 +1,22 @@
 #pragma once
-#include "Dispatch.h"
+#include "Types.h"
+#include <cstdint>
 
 namespace impl
 {
-	class AbstractLootDispatcherIdentity
+	class AbstractLootObtainabilityController
 	{
 	public:
 		virtual bool ShouldRemoveFromContainer() const = 0;
-	protected:
 	};
 
-
-	template<Identifiers ContainerIdentity>
-	class LootDispatcherIdentity : public AbstractLootDispatcherIdentity
+	template<Obtainabilities Obtainability>
+	class LootObtainabilityController : public AbstractLootObtainabilityController
 	{
-	public:
-		virtual bool ShouldRemoveFromContainer() const = 0;
-	protected:
 	};
 
 	template<>
-	class LootDispatcherIdentity<Identifiers::Common> : public AbstractLootDispatcherIdentity
+	class LootObtainabilityController<Obtainabilities::Common> : public AbstractLootObtainabilityController
 	{
 	public:
 		bool ShouldRemoveFromContainer() const override { return false; }
@@ -28,7 +24,7 @@ namespace impl
 	};
 
 	template<>
-	class LootDispatcherIdentity<Identifiers::Variable> : public AbstractLootDispatcherIdentity
+	class LootObtainabilityController<Obtainabilities::Variable> : public AbstractLootObtainabilityController
 	{
 	public:
 		bool ShouldRemoveFromContainer() const override
@@ -44,7 +40,7 @@ namespace impl
 	};
 
 	template<>
-	class LootDispatcherIdentity<Identifiers::Unique> : public AbstractLootDispatcherIdentity
+	class LootObtainabilityController<Obtainabilities::Unique> : public AbstractLootObtainabilityController
 	{
 	public:
 		bool ShouldRemoveFromContainer() const override { return true; }
