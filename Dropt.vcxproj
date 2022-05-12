@@ -91,19 +91,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\Include\CoreLoot.h" />
-    <ClInclude Include="src\Include\Dispatch.h" />
-    <ClInclude Include="src\Include\Loot.h" />
-    <ClInclude Include="src\Include\LootBag.h" />
-    <ClInclude Include="src\Include\LootDispatcherDefinition.h" />
-    <ClInclude Include="src\Include\LootObtainabilityController.h" />
-    <ClInclude Include="src\Include\LootTable.h" />
-    <ClInclude Include="src\Include\Types.h" />
+    <ClInclude Include="src\Include\Core\CoreLoot.h" />
+    <ClInclude Include="src\Include\Core\Dispatch.h" />
+    <ClInclude Include="src\Include\ElementLoot\Loot.h" />
+    <ClInclude Include="src\Include\LootBag\LootBag.h" />
+    <ClInclude Include="src\Include\Core\LootDispatcherDefinition.h" />
+    <ClInclude Include="src\Include\Core\LootObtainabilityController.h" />
+    <ClInclude Include="src\Include\LootBag\WeightedLootBag.h" />
+    <ClInclude Include="src\Include\LootTable\LootTable.h" />
+    <ClInclude Include="src\Include\Core\Types.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Impl\Dispatch.cpp" />
     <ClCompile Include="src\Impl\Dropt.cpp" />
-    <ClCompile Include="src\Impl\LootBag.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

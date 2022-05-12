@@ -15,28 +15,31 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Include\Dispatch.h">
+    <ClInclude Include="src\Include\Core\Dispatch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Include\LootBag.h">
+    <ClInclude Include="src\Include\LootBag\LootBag.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Include\Types.h">
+    <ClInclude Include="src\Include\Core\Types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Include\LootDispatcherDefinition.h">
+    <ClInclude Include="src\Include\Core\LootDispatcherDefinition.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Include\Loot.h">
+    <ClInclude Include="src\Include\ElementLoot\Loot.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Include\CoreLoot.h">
+    <ClInclude Include="src\Include\Core\CoreLoot.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Include\LootTable.h">
+    <ClInclude Include="src\Include\LootTable\LootTable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Include\LootObtainabilityController.h">
+    <ClInclude Include="src\Include\Core\LootObtainabilityController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Include\LootBag\WeightedLootBag.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -45,9 +48,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Impl\Dispatch.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Impl\LootBag.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
