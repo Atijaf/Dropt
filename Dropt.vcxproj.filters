@@ -18,7 +18,7 @@
     <ClInclude Include="src\Include\Core\Dispatch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Include\LootBag\LootBag.h">
+    <ClInclude Include="src\Include\LootBag\AbstractLootBag.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Include\Core\Types.h">
@@ -40,6 +40,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Include\LootBag\WeightedLootBag.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Include\LootBag\IntervalLootBag.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

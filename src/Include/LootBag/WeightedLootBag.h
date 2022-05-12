@@ -1,7 +1,14 @@
 #pragma once
-#include "LootBag.h"
+#include "AbstractLootBag.h"
 
-template<>
-class LootBagImplementation<Variance::Chance> : public AbstractLootBag<Variance::Chance>
+namespace impl
 {
+
+	template<>
+	class LootBagImplementation<Variance::Chance> : public AbstractLootBag<Variance::Chance>
+	{
+	protected:
+		bool GrabLoot(std::list<void*>& OutLoot) override { return false; };
+	};
+
 }
