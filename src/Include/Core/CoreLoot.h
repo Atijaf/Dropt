@@ -28,17 +28,17 @@ namespace impl
 	class CoreLoot : public CoreLootContainer<LootType, Variant>, public LootObtainabilityController<Obtainability>
 	{
 	public:
-	protected:
-		bool GetLoot(std::list<void*>& OutLoot) override final {
+		virtual bool GetLoot(std::list<LootType*>& OutLoot) final {
 			Observe_GetLoot();
 			return GetLoot_Impl(OutLoot);
 		}
 
+	protected:
 		bool ShouldRemoveFromContainer() const override final {
 			return LootObtainabilityController::ShouldRemoveFromContainer();
 		}
 
-		virtual bool GetLoot_Impl(std::list<void*>& OutLoot) = 0;
+		virtual bool GetLoot_Impl(std::list<LootType*>& OutLoot) = 0;
 	};
 
 

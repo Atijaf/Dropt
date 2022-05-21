@@ -7,6 +7,7 @@
 int main()
 {
 	using namespace impl;
+	using namespace Core;
 
 	struct Armor
 	{
@@ -33,11 +34,10 @@ int main()
 
 	ArmorBag.AddLoot(&NestedArmorBag);
 
-
 	std::list<Armor*> ObtainedArmor;
-	DropTable.ObtainLoot(ObtainedArmor);
-	ArmorBag.ObtainLoot(ObtainedArmor);
-	ArmorBag.ObtainLoot(ObtainedArmor);
+	DropTable.GetLoot(ObtainedArmor);
+	ArmorBag.GetLoot(ObtainedArmor);
+	ArmorBag.GetLoot(ObtainedArmor);
 
  
 }

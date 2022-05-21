@@ -26,7 +26,7 @@ namespace impl
 
 
 	protected:
-		bool GetLoot_Impl(std::list<void*>& OutLoot) override{
+		bool GetLoot_Impl(std::list<LootType*>& OutLoot) override{
 			OutLoot.push_back(CoreElementLoot::GetLoot());
 			return true;
 		}

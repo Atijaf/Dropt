@@ -97,8 +97,9 @@
     <ClInclude Include="src\Include\LootBag\AbstractLootBag.h" />
     <ClInclude Include="src\Include\Core\LootDispatcherDefinition.h" />
     <ClInclude Include="src\Include\Core\LootObtainabilityController.h" />
-    <ClInclude Include="src\Include\LootBag\IntervalLootBag.h" />
-    <ClInclude Include="src\Include\LootBag\WeightedLootBag.h" />
+    <ClInclude Include="src\Include\LootBag\LootBag.h" />
+    <ClInclude Include="src\Include\LootBag\LootBag_Specialization.h" />
+    <ClInclude Include="src\Include\LootTable\AbstractLootTable.h" />
     <ClInclude Include="src\Include\LootTable\LootTable.h" />
     <ClInclude Include="src\Include\Core\Types.h" />
   </ItemGroup>
