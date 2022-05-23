@@ -1,5 +1,5 @@
 #pragma once
-#include "../Core/CoreLoot.h"
+#include "../LootBag/LootBag.h"
 #include <list>
 
 namespace impl
@@ -19,27 +19,45 @@ namespace impl
 	{
 	public:
 		void AddWeightedLoot(CoreLootContainer<LootType, Variance::Chance>* Loot) {
-			WeightedLootArray[0] = Loot;
 		}
 
 		void AddIntervalLoot(CoreLootContainer<LootType, Variance::Interval>* Loot) {
-			IntervalLootArray[0] = Loot;
 		}
 
 		void AddConstantLoot(CoreLootContainer<LootType, Variance::Constant>* Loot) {
-			ConstantLootArray[0] = Loot;
+
 		}
 
+		uint64_t GetTotalLoot() { 
+			return	(uint64_t)(WeightedLootBag.GetNumOfLoot()) +
+					(uint64_t)(IntervalLootBag.GetNumOfLoot()) +
+					(uint64_t)(ConstantLootBag.GetNumOfLoot());
+			return 0;
+		}
 
 	protected:
 		bool RollForLoot(std::list<LootType*>& OutLoot) {
-			return (WeightedLootBag.GrabLoot(OutLoot) ||
-					IntervalLootBag.GrabLoot(OutLoot) ||
-					ConstantLootBag.GrabLoot(OutLoot));
+			if (GetTotalLoot() == 0)
+				return false;
+			return (WeightedLootBag.GetLoot(OutLoot) ||
+					IntervalLootBag.GetLoot(OutLoot) ||
+					ConstantLootBag.GetLoot(OutLoot));
 		}
 
-		CoreLootBag<LootType, Variance::Chance> WeightedLootBag;
-		CoreLootBag<LootType, Variance::Interval> IntervalLootBag;
-		CoreLootBag<LootType, Variance::Constant> ConstantLootBag;
+		bool FinalizeLoot_impl() {
+			return (WeightedLootBag.FinalizeLoot() &&
+					IntervalLootBag.FinalizeLoot() &&
+					ConstantLootBag.FinalizeLoot());
+		}
+
+		//bool FinalizeLoot_impl();
+
+		// LootBag with Weighted Drops
+		Core::LootBag<LootType, Variance::Constant, Obtainabilities::Common, Variance::Chance> WeightedLootBag;
+		// LootBag with Interval Drops
+		Core::LootBag<LootType, Variance::Constant, Obtainabilities::Common, Variance::Interval> IntervalLootBag;
+		// LootBag with Constant Drops
+		Core::LootBag<LootType, Variance::Constant, Obtainabilities::Common, Variance::Constant> ConstantLootBag;
+
 	};
 }

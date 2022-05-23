@@ -21,6 +21,7 @@ namespace impl
 	class CoreLootContainer : public VariantLoot<Variant>
 	{
 	public:
+		virtual bool GetLoot(std::list<LootType*>& OutLoot) = 0;
 	protected:
 	};
 
@@ -28,7 +29,7 @@ namespace impl
 	class CoreLoot : public CoreLootContainer<LootType, Variant>, public LootObtainabilityController<Obtainability>
 	{
 	public:
-		virtual bool GetLoot(std::list<LootType*>& OutLoot) final {
+		bool GetLoot(std::list<LootType*>& OutLoot) override final {
 			Observe_GetLoot();
 			return GetLoot_Impl(OutLoot);
 		}

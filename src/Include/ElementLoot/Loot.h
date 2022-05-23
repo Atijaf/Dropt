@@ -23,7 +23,7 @@ namespace impl
 	{
 	public:
 		ElementLoot(LootType* _Loot) : Loot(_Loot) {};
-
+		bool FinalizeLoot() override final { return true; }
 
 	protected:
 		bool GetLoot_Impl(std::list<LootType*>& OutLoot) override{

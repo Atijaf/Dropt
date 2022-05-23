@@ -1,5 +1,7 @@
 #pragma once
-#include "LootBag_Specialization.h"
+#include "WeightedLootBag.h"
+#include "IntervalLootBag.h"
+#include "ConstantLootBag.h"
 
 namespace Core
 {
@@ -15,12 +17,17 @@ namespace Core
 		Variance Variant,
 		Obtainabilities Obtainability,
 		Variance ContentVariant>
-	class LootBag : public BaseLootBag<LootType, ContentVariant>, public CoreLoot<LootType, Variant, Obtainability>
+	class LootBag : public CoreLootBag<LootType, ContentVariant>, public CoreLoot<LootType, Variant, Obtainability>
 	{
+	public:
+		bool FinalizeLoot() override {
+			return FinalizeLoot_impl();
+		}
 	protected:
 		bool GetLoot_Impl(std::list<LootType*>& OutLoot) override {
 			return GrabLoot(OutLoot);
 		}
+
 	};
 
 }

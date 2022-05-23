@@ -11,6 +11,7 @@ namespace impl
 	{
 	public:
 
+		virtual bool FinalizeLoot() = 0;
 	protected:
 		virtual bool ShouldRemoveFromContainer() const = 0;
 	};

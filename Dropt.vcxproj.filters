@@ -39,13 +39,25 @@
     <ClInclude Include="src\Include\Core\LootObtainabilityController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Include\LootBag\LootBag_Specialization.h">
+    <ClInclude Include="src\Include\LootBag\ConstantLootBag.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Include\LootBag\LootBag.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Include\LootTable\AbstractLootTable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Include\Helper\MArray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Include\Helper\Globals.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Include\LootBag\WeightedLootBag.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Include\LootBag\IntervalLootBag.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

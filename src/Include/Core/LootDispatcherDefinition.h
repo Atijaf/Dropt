@@ -17,11 +17,15 @@ namespace impl
 	{
 	};
 
-	template<Variance ObjectDefine>
+	template<Variance Variant>
 	class LootDispatchVariance : public AbstractLootDispatchVariance
 	{
 	public:
 		LootDispatchVariance() {};
+
+		bool operator <(const LootDispatchVariance<Variant>& Other) const {
+			return true;
+		}
 	protected:
 	};
 
@@ -32,9 +36,13 @@ namespace impl
 		LootDispatchVariance() {};
 
 		uint64_t GetRelativeWeight() const { return RelativeWeight; }
-		uint64_t GetWeight() const { return Weight; }
+		uint32_t GetWeight() const { return Weight; }
 
 		void SetWeight(uint32_t _Weight) { Weight = _Weight; }
+
+		bool operator <(const LootDispatchVariance<Variance::Chance>& Other) const {
+			return this->GetWeight() < Other.GetWeight();
+		}
 	protected:
 		uint64_t RelativeWeight = 0;
 		uint32_t Weight = 0;
@@ -48,6 +56,10 @@ namespace impl
 		uint32_t GetInterval() const { return Interval; }
 
 		void SetInterval(uint32_t _Interval) { Interval = _Interval; }
+
+		bool operator <(const LootDispatchVariance<Variance::Interval>& Other) const {
+			return this->GetInterval() < Other.GetInterval();
+		}
 	protected:
 		uint32_t Interval = 0;
 	};

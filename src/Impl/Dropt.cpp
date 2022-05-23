@@ -1,5 +1,6 @@
 #include "../Include/LootBag/LootBag.h"
 #include "../Include/LootTable/LootTable.h"
+#include "../Include/Helper/MArray.h"
 
 // Debug
 #include <string>
@@ -19,6 +20,7 @@ int main()
 
 	};
 
+	{
 	Armor ActualArmorLoot("Nested Armor");
 	Weapon ActualWeaponLoot;
 
@@ -28,7 +30,7 @@ int main()
 	LootBag<Armor, Variance::Chance, Obtainabilities::Common, Variance::Chance> NestedArmorBag;
 	LootBag<Armor, Variance::Chance, Obtainabilities::Common, Variance::Chance> ArmorBag;
 
-	Core::LootTable<Armor,Variance::Chance,Obtainabilities::Common> DropTable;
+	Core::LootTable<Armor, Variance::Chance, Obtainabilities::Common> DropTable;
 
 	NestedArmorBag.AddLoot(&ArmorLoot);
 
@@ -38,6 +40,22 @@ int main()
 	DropTable.GetLoot(ObtainedArmor);
 	ArmorBag.GetLoot(ObtainedArmor);
 	ArmorBag.GetLoot(ObtainedArmor);
+	}
 
- 
+	{
+		Armor Chestplate("Chest Armor");
+		Armor Helmet("Head Gear");
+
+		ElementLoot<Armor, Variance::Chance, Obtainabilities::Common> ChestPlateLoot(&Chestplate);
+		ChestPlateLoot.SetWeight(100);
+
+		ElementLoot<Armor, Variance::Chance, Obtainabilities::Common> HelmetLoot(&Helmet);
+		HelmetLoot.SetWeight(10);
+
+		LootTable<Armor, Variance::Chance, Obtainabilities::Common> DropTable;
+		DropTable.AddWeightedLoot(&ChestPlateLoot);
+		DropTable.AddWeightedLoot(&HelmetLoot);
+
+		DropTable.FinalizeLoot();
+	}
 }
