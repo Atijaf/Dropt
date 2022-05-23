@@ -60,4 +60,4 @@ namespace impl
 		Core::LootBag<LootType, Variance::Constant, Obtainabilities::Common, Variance::Constant> ConstantLootBag;
 
 	};
-}
+} 
