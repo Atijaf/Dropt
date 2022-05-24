@@ -1,5 +1,7 @@
 #pragma once
 #include <cstdint>
+#include <functional>
+#include <algorithm>
 
 namespace Dropt {
 	namespace Helper
@@ -12,6 +14,25 @@ namespace Dropt {
 		template<typename T>
 		class MArray {
 		public:
+			/// <summary>
+			/// Initializes array and provides a comparator function
+			/// </summary>
+			/// <param name="InitialSize">:	Starting size of array</param>
+			/// <param name="_Func_Sort">:	Comparator function for the purpose of sorting the array,
+			///								Must return a bool</param>
+			MArray(uint32_t InitialSize, std::function<bool(const T A, const T B)> _Func_Sort) :
+				Func_Sort(_Func_Sort),
+				Size(InitialSize),
+				ArrayOfElements(new T[Size]) {};
+
+			/// <summary>
+			/// Initializes array
+			/// </summary>
+			/// <param name="InitialSize">:	Starting size of array</param>
+			/// 
+			/// <remarks>
+			/// Default sorting of array is least to greatest
+			/// </remarks>
 			MArray(uint32_t InitialSize) :
 				Size(InitialSize),
 				ArrayOfElements(new T[Size]) {};
@@ -24,6 +45,10 @@ namespace Dropt {
 			uint32_t GetSize() const { return Size; }
 			uint32_t GetNumOfElements() const { return NumOfElements; }
 
+			/// <summary>
+			/// Sorts array using Compare Function.
+			/// </summary>
+			/// <param name="Func"> Must return bool and accept two parameters of type Stored in array</param>
 			void Sort();
 
 			// Returns Element at Index of Array.  Unsafe
@@ -36,6 +61,9 @@ namespace Dropt {
 		protected:
 
 			bool NeedsResize() const { return NumOfElements == Size; }
+
+			// Function to compare elements to one another.  Used for sorting array
+			std::function<bool(const T A, const T B)> Func_Sort = [](T A, T B) {return (A < B); };
 
 			uint32_t Size = 1;
 			uint32_t NumOfElements = 0;
@@ -92,22 +120,16 @@ namespace Dropt {
 			return true;
 		}
 
+
+		
+
 		template<typename T>
 		inline void Dropt::Helper::MArray<T>::Sort()
 		{
 			if (NumOfElements == 0)
 				return;
 
-			auto Compare = [](const void* A, const void* B) {
-				const T* APtr = (const T*)(A);
-				const T* BPtr = (const T*)(B);
-				if (APtr > BPtr)
-					return -1;
-				if (APtr < BPtr)
-					return 1;
-				return 0;
-			};
-			std::qsort(this->ArrayOfElements, NumOfElements, sizeof(ArrayOfElements[0]), Compare);
+			std::sort(ArrayOfElements, ArrayOfElements + NumOfElements, Func_Sort);
 		}
 	}
 }

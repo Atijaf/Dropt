@@ -24,9 +24,11 @@ namespace impl
 		LootDispatchVariance() {};
 
 		bool operator <(const LootDispatchVariance<Variant>& Other) const {
-			return true;
+			return false;
 		}
-	protected:
+		bool operator >(const LootDispatchVariance<Variant>& Other) const {
+			return false;
+		}
 	};
 
 	template<>
@@ -42,6 +44,9 @@ namespace impl
 
 		bool operator <(const LootDispatchVariance<Variance::Chance>& Other) const {
 			return this->GetWeight() < Other.GetWeight();
+		}
+		bool operator >(const LootDispatchVariance<Variance::Chance>& Other) const {
+			return !(*this < Other);
 		}
 	protected:
 		uint64_t RelativeWeight = 0;
@@ -59,6 +64,9 @@ namespace impl
 
 		bool operator <(const LootDispatchVariance<Variance::Interval>& Other) const {
 			return this->GetInterval() < Other.GetInterval();
+		}
+		bool operator >(const LootDispatchVariance<Variance::Interval>& Other) const {
+			return !(*this < Other);
 		}
 	protected:
 		uint32_t Interval = 0;

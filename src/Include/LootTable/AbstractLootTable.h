@@ -18,14 +18,19 @@ namespace impl
 	class CoreLootTable
 	{
 	public:
-		void AddWeightedLoot(CoreLootContainer<LootType, Variance::Chance>* Loot) {
+		template<Obtainabilities Obtainability>
+		void AddWeightedLoot(CoreLoot<LootType, Variance::Chance, Obtainability>* Loot) {
+			WeightedLootBag.AddLoot(Loot);
 		}
 
-		void AddIntervalLoot(CoreLootContainer<LootType, Variance::Interval>* Loot) {
+		template<Obtainabilities Obtainability>
+		void AddIntervalLoot(CoreLoot<LootType, Variance::Interval, Obtainability>* Loot) {
+			IntervalLootBag.AddLoot(Loot);
 		}
 
-		void AddConstantLoot(CoreLootContainer<LootType, Variance::Constant>* Loot) {
-
+		template<Obtainabilities Obtainability>
+		void AddConstantLoot(CoreLoot<LootType, Variance::Constant, Obtainability>* Loot) {
+			ConstantLootBag.AddLoot(Loot);
 		}
 
 		uint64_t GetTotalLoot() { 

@@ -19,11 +19,21 @@ namespace impl
 	class BaseLootBag : public AbstractLootBag
 	{
 	public:
-		bool AddLoot(CoreLootContainer<LootType, ContentVariant>* Loot);
+		template<Obtainabilities Obtainability>
+		bool AddLoot(CoreLoot<LootType, ContentVariant, Obtainability>* Loot);
 		uint32_t GetNumOfLoot() const { return LootArray.GetNumOfElements(); }
 
 	protected:
-		BaseLootBag(uint32_t InitialSize = 10);
+		/// <summary>
+		/// Initializes a LootBag
+		/// </summary>
+		/// <param name="FuncSort">:	Sorting Function that returns bools and accepts two CoreLootContainer Pointers</param>
+		/// <param name="InitialSize">:	Starting size of the array (Default 10)</param>
+		BaseLootBag(std::function<bool( CoreLootContainer<LootType, ContentVariant>* A,
+										CoreLootContainer<LootType, ContentVariant>* B)> FuncSort,
+					uint32_t InitialSize = 10) :
+			LootArray(InitialSize, FuncSort) {}
+
 		virtual ~BaseLootBag();
 
 		virtual bool GrabLoot(std::list<LootType*>& OutLoot) { return false; }
@@ -41,20 +51,16 @@ namespace impl
 		bool GrabLoot(std::list<LootType*>& OutLoot) override { return false; }
 	};
 
-	template<typename LootType, Variance ContentVariant>
-	inline impl::BaseLootBag<LootType, ContentVariant>::BaseLootBag(uint32_t InitialSize) :
-		LootArray(InitialSize)
-	{
-	}
-
 
 	template<typename LootType, Variance ContentVariant>
 	inline impl::BaseLootBag<LootType, ContentVariant>::~BaseLootBag()
 	{
 	}
 
+
 	template<typename LootType, Variance ContentVariant>
-	inline bool impl::BaseLootBag<LootType, ContentVariant>::AddLoot(CoreLootContainer<LootType, ContentVariant>* Loot)
+	template<Obtainabilities Obtainability>
+	inline bool BaseLootBag<LootType, ContentVariant>::AddLoot(CoreLoot<LootType, ContentVariant, Obtainability>* Loot)
 	{
 		return LootArray.AddElement(Loot);
 	}

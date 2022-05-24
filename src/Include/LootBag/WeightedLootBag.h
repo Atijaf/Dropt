@@ -11,22 +11,43 @@ namespace impl
 	template<typename LootType>
 	class CoreLootBag<LootType, Variance::Chance> : public BaseLootBag<LootType, Variance::Chance>
 	{
+	public:
+		CoreLootBag() :
+			BaseLootBag([](CoreLootContainer<LootType, Variance::Chance>* A, CoreLootContainer<LootType, Variance::Chance>* B)
+				{ return(*A > *B); }
+			)
+		{}
 	protected:
 		bool GrabLoot(std::list<LootType*>& OutLoot) override;
-		uint32_t FindGCFOfWeights() const;
 
-		bool FinalizeLoot_impl() override;
+		virtual bool FinalizeLoot_impl() override final;
+
+	private:
+		uint32_t FindGCFOfWeights() const;
+		void ReduceToGCF();
 	};
 
 
 	template<typename LootType>
 	inline bool impl::CoreLootBag<LootType, Variance::Chance>::FinalizeLoot_impl()
 	{
-		// Find GCF of all weights in LootArray;
-		const uint32_t GCFOfWeights = FindGCFOfWeights();
+		// Find GCF of all weights in LootArray and reduce the weights based off that;
+		ReduceToGCF();
+		// Sort from greatest to least
 		LootArray.Sort();
+
 		return false;
 	}
+
+	template<typename LootType>
+	inline void impl::CoreLootBag<LootType, Variance::Chance>::ReduceToGCF()
+	{
+		const uint32_t GCF = FindGCFOfWeights();
+		if (GCF > 1) 
+			for (uint32_t i = 0; i < GetNumOfLoot(); ++i) 
+				LootArray[i]->SetWeight(LootArray[i]->GetWeight() / GCF);
+	}
+
 	template<typename LootType>
 	inline uint32_t CoreLootBag<LootType, Variance::Chance>::FindGCFOfWeights() const
 	{
@@ -42,7 +63,7 @@ namespace impl
 		};
 
 		uint32_t Result = LootArray[0]->GetWeight();
-		for (uint32_t i = 1; i < LootArray.GetSize(); ++i) {
+		for (uint32_t i = 1; i < LootArray.GetNumOfElements(); ++i) {
 			Result = GCD(LootArray[i]->GetWeight(), Result);
 
 			// No need to further check for GCDs

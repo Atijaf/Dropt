@@ -6,25 +6,27 @@ namespace impl
 {	
 
 	/// <summary>
-	/// Constricts Array of this type to LootType and Variant
+	/// A type of base parent for storing arrays of elements containing both a LootType and Variant
 	/// </summary>
-	/// <typeparam name="LootType"> The Type of Loot stored (Armor, Weapons, potions, etc..)</typeparam>
-	template<Variance Variant>
-	class VariantLoot : public AbstractLootDispatcher, public LootDispatchVariance<Variant>
-	{
-	public:
-	protected:
-		
-	};
-
+	/// <typeparam name="LootType">: Type of Loot (Armor, Weapon, Potion)</typeparam>
+	/// <typeparam name="Variant">: Variant of Loot (Chance, Weight, Constant)</typeparam>
 	template<typename LootType, Variance Variant>
-	class CoreLootContainer : public VariantLoot<Variant>
+	class CoreLootContainer : public AbstractLootDispatcher, public LootDispatchVariance<Variant>
 	{
 	public:
 		virtual bool GetLoot(std::list<LootType*>& OutLoot) = 0;
+
 	protected:
 	};
 
+
+
+	/// <summary>
+	/// A slightly more defined type of base parent for storing arrays of elements containing LootType, Variant, and Obtainability
+	/// </summary>
+	/// <typeparam name="LootType">: Type of Loot (Armor, Weapon, Potion)</typeparam>
+	/// <typeparam name="Variant">: Variant of Loot (Chance, Weight, Constant)</typeparam>
+	/// <typeparam name="Obtainability">: The Obtainability of the Loot (Unique, Variable, Common)</typeparam>
 	template<typename LootType, Variance Variant, Obtainabilities Obtainability>
 	class CoreLoot : public CoreLootContainer<LootType, Variant>, public LootObtainabilityController<Obtainability>
 	{
@@ -39,7 +41,9 @@ namespace impl
 			return LootObtainabilityController::ShouldRemoveFromContainer();
 		}
 
+		// Required Overrides.  Derived classes should probably keep this protected or private
 		virtual bool GetLoot_Impl(std::list<LootType*>& OutLoot) = 0;
+		virtual bool FinalizeLoot() = 0;
 	};
 
 

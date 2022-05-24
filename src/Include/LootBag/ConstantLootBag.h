@@ -11,9 +11,15 @@ namespace impl
 	template<typename LootType>
 	class CoreLootBag<LootType, Variance::Constant> : public BaseLootBag<LootType, Variance::Constant>
 	{
+	public:
+		CoreLootBag() :
+			BaseLootBag([](CoreLootContainer<LootType, Variance::Constant>* A, CoreLootContainer<LootType, Variance::Constant>* B) {
+			return(*A > *B);
+				})
+		{};
 	protected:
-		bool GrabLoot(std::list<LootType*>& OutLoot) override;
-		bool FinalizeLoot_impl() override;
+		virtual bool GrabLoot(std::list<LootType*>& OutLoot) override final;
+		virtual bool FinalizeLoot_impl() override final;
 	};
 
 	template<typename LootType>

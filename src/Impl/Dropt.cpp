@@ -47,10 +47,10 @@ int main()
 		Armor Helmet("Head Gear");
 
 		ElementLoot<Armor, Variance::Chance, Obtainabilities::Common> ChestPlateLoot(&Chestplate);
-		ChestPlateLoot.SetWeight(100);
+		ChestPlateLoot.SetWeight(10);
 
 		ElementLoot<Armor, Variance::Chance, Obtainabilities::Common> HelmetLoot(&Helmet);
-		HelmetLoot.SetWeight(10);
+		HelmetLoot.SetWeight(150);
 
 		LootTable<Armor, Variance::Chance, Obtainabilities::Common> DropTable;
 		DropTable.AddWeightedLoot(&ChestPlateLoot);
