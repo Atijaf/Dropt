@@ -31,6 +31,8 @@ namespace impl
 			return true;
 		}
 
+		virtual bool IsFinalized() const override { return true; }
+
 		LootType* Loot;
 	};
 }

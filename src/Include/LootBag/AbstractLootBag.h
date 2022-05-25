@@ -8,8 +8,18 @@ namespace impl
 {
 
 	class AbstractLootBag {
+	public:
+		bool IsLootBagFinalized() const { return bIsFinalized; }
 	protected:
-		virtual bool FinalizeLoot_impl() = 0;
+		bool FinalizeLootBag() {
+			if (FinalizeLootBag_impl())
+				bIsFinalized = true;
+			return bIsFinalized;
+		}
+
+	private:
+		virtual bool FinalizeLootBag_impl() = 0;
+		bool bIsFinalized = false;
 	};
 	/// <summary>
 	/// Very Base of a Loot Bag.  Provides implementation for adding loot, and forces GrabLoot to be defined in any children of this class
@@ -20,6 +30,7 @@ namespace impl
 	{
 	public:
 		template<Obtainabilities Obtainability>
+		// Catch all add loot function
 		bool AddLoot(CoreLoot<LootType, ContentVariant, Obtainability>* Loot);
 		uint32_t GetNumOfLoot() const { return LootArray.GetNumOfElements(); }
 
@@ -37,10 +48,12 @@ namespace impl
 		virtual ~BaseLootBag();
 
 		virtual bool GrabLoot(std::list<LootType*>& OutLoot) { return false; }
+		void RemoveIndexFromArray(const uint32_t Index);
 
 		std::uniform_int_distribution<uint64_t> BagIntDistrib;
 		Dropt::Helper::MArray<CoreLootContainer<LootType, ContentVariant>*> LootArray;
 		
+	private:
 	};
 
 	template<typename LootType, Variance ContentVariant>
@@ -63,6 +76,11 @@ namespace impl
 	inline bool BaseLootBag<LootType, ContentVariant>::AddLoot(CoreLoot<LootType, ContentVariant, Obtainability>* Loot)
 	{
 		return LootArray.AddElement(Loot);
+	}
+
+	template<typename LootType, Variance ContentVariant>
+	inline void BaseLootBag<LootType, ContentVariant>::RemoveIndexFromArray(const uint32_t Index)
+	{
 	}
 
 }

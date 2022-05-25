@@ -20,10 +20,14 @@ namespace Core
 	class LootBag : public CoreLootBag<LootType, ContentVariant>, public CoreLoot<LootType, Variant, Obtainability>
 	{
 	public:
+		LootBag(uint32_t InitialSize = 10) :
+			CoreLootBag(InitialSize) {};
 		// Performs final actions on a Loot Table to prepare it for grabs
 		bool FinalizeLoot() override {
-			return CoreLootBag::FinalizeLoot_impl();
+			return FinalizeLootBag();
 		}
+
+		bool IsFinalized() const override { return IsLootBagFinalized(); }
 	protected:
 		// Implementation of GetLoot for LootBag, defined in AbstractLootBag
 		bool GetLoot_Impl(std::list<LootType*>& OutLoot) override {

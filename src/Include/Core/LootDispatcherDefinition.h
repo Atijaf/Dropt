@@ -40,6 +40,7 @@ namespace impl
 		uint64_t GetRelativeWeight() const { return RelativeWeight; }
 		uint32_t GetWeight() const { return Weight; }
 
+		void SetRelativeWeight(uint64_t _RelativeWeight) { RelativeWeight = _RelativeWeight; }
 		void SetWeight(uint32_t _Weight) { Weight = _Weight; }
 
 		bool operator <(const LootDispatchVariance<Variance::Chance>& Other) const {

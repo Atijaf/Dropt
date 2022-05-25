@@ -13,19 +13,21 @@ namespace impl
 	class CoreLootBag<LootType, Variance::Interval> : public BaseLootBag<LootType, Variance::Interval>
 	{
 	public:
-		CoreLootBag() :
+		CoreLootBag(uint32_t InitialSize) :
 			BaseLootBag([](CoreLootContainer<LootType, Variance::Interval>* A, CoreLootContainer<LootType, Variance::Interval>* B) {
-				return(*A > *B);
-			}) 
+				return(*A > *B); },
+				InitialSize	
+			)
+			
 		{};
 
 	protected:
 		virtual bool GrabLoot(std::list<LootType*>& OutLoot) override final;
-		virtual bool FinalizeLoot_impl() override final;
+		virtual bool FinalizeLootBag_impl() override final;
 	};
 
 	template<typename LootType>
-	inline bool impl::CoreLootBag<LootType, Variance::Interval>::FinalizeLoot_impl()
+	inline bool impl::CoreLootBag<LootType, Variance::Interval>::FinalizeLootBag_impl()
 	{
 		return false;
 	}

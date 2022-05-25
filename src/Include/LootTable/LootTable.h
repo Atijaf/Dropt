@@ -11,10 +11,12 @@ namespace Core
 	class LootTable : public CoreLootTable<LootType>, public CoreLoot<LootType, Variant, Obtainability>
 	{
 	public:
-		bool FinalizeLoot() override final { return FinalizeLoot_impl(); }
+		bool FinalizeLoot() override { return FinalizeLootTable(); }
 	protected:
 		bool GetLoot_Impl(std::list<LootType*>& OutLoot) override {
 			return RollForLoot(OutLoot);
 		}
+
+		virtual bool IsFinalized() const override { return IsLootTableFinalized(); }
 	};
 }

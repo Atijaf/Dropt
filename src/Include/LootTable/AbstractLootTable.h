@@ -4,6 +4,18 @@
 
 namespace impl
 {
+
+	class AbstractLootTable
+	{
+	public:
+		bool IsLootTableFinalized() const { return bLootTableFinalized; }
+		virtual bool FinalizeLootTable() = 0;
+	protected:
+
+	private:
+		bool bLootTableFinalized = false;
+	};
+
 	/// <summary>
 	/// Controller for Obtaining loot from the Loot Table
 	/// </summary>
@@ -12,10 +24,8 @@ namespace impl
 	/// Forces Variant to remain the same amongst an array of these objects
 	/// </summary>
 	/// <typeparam name="Variant"> How the Loot Table is obtained (If stored within another Loot Table or Loot Bag)</typeparam>
-	/// 
-
 	template<typename LootType>
-	class CoreLootTable
+	class CoreLootTable : public AbstractLootTable
 	{
 	public:
 		template<Obtainabilities Obtainability>
@@ -49,13 +59,13 @@ namespace impl
 					ConstantLootBag.GetLoot(OutLoot));
 		}
 
-		bool FinalizeLoot_impl() {
+		bool FinalizeLootTable() {
 			return (WeightedLootBag.FinalizeLoot() &&
 					IntervalLootBag.FinalizeLoot() &&
 					ConstantLootBag.FinalizeLoot());
 		}
 
-		//bool FinalizeLoot_impl();
+		//bool FinalizeLootBag_impl();
 
 		// LootBag with Weighted Drops
 		Core::LootBag<LootType, Variance::Constant, Obtainabilities::Common, Variance::Chance> WeightedLootBag;
