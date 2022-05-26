@@ -81,14 +81,14 @@ namespace Dropt {
 		template<typename T>
 		inline bool MArray<T>::Resize(uint32_t NewSize)
 		{
-			if (NewSize = Size) return false;
+			if (NewSize == Size) return false;
 
 			T* NewContainer = new T[NewSize];
 			for (uint32_t i = 0; i < ((NewSize > NumOfElements) ? NumOfElements : NewSize); ++i)
 				NewContainer[i] = ArrayOfElements[i];
 			delete[] ArrayOfElements;
 			ArrayOfElements = NewContainer;
-			return false;
+			return true;
 		}
 
 		template<typename T>

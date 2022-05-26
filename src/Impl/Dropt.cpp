@@ -20,36 +20,37 @@ int main()
 
 	};
 
-	{
-	Armor ActualArmorLoot("Nested Armor");
-	Weapon ActualWeaponLoot;
 
-	ElementLoot<Armor, Variance::Chance, Obtainabilities::Common> ArmorLoot(&ActualArmorLoot);
-	ElementLoot<Weapon, Variance::Chance, Obtainabilities::Common> WeaponLoot(&ActualWeaponLoot);
+	if(false){
+		Armor ActualArmorLoot("Nested Armor");
+		Weapon ActualWeaponLoot;
 
-	LootBag<Armor, Variance::Chance, Obtainabilities::Common, Variance::Chance> NestedArmorBag;
-	LootBag<Armor, Variance::Chance, Obtainabilities::Common, Variance::Chance> ArmorBag;
+		ElementLoot<Armor, Variance::Chance, Obtainabilities::Unique> ArmorLoot(&ActualArmorLoot);
+		ElementLoot<Weapon, Variance::Chance, Obtainabilities::Common> WeaponLoot(&ActualWeaponLoot);
 
-	Core::LootTable<Armor, Variance::Chance, Obtainabilities::Common> DropTable;
+		LootBag<Armor, Variance::Chance, Obtainabilities::Common, Variance::Chance> NestedArmorBag;
+		LootBag<Armor, Variance::Chance, Obtainabilities::Common, Variance::Chance> ArmorBag;
 
-	NestedArmorBag.AddLoot(&ArmorLoot);
+		Core::LootTable<Armor, Variance::Chance, Obtainabilities::Common> DropTable;
 
-	ArmorBag.AddLoot(&NestedArmorBag);
+		NestedArmorBag.AddLoot(&ArmorLoot);
 
-	std::list<Armor*> ObtainedArmor;
-	DropTable.GetLoot(ObtainedArmor);
-	ArmorBag.GetLoot(ObtainedArmor);
-	ArmorBag.GetLoot(ObtainedArmor);
+		ArmorBag.AddLoot(&NestedArmorBag);
+
+		std::list<Armor*> ObtainedArmor;
+		DropTable.GetLoot(ObtainedArmor);
+		ArmorBag.GetLoot(ObtainedArmor);
+		ArmorBag.GetLoot(ObtainedArmor);
 	}
 
 	{
 		Armor Chestplate("Chest Armor");
 		Armor Helmet("Head Gear");
 
-		ElementLoot<Armor, Variance::Chance, Obtainabilities::Common> ChestPlateLoot(&Chestplate);
+		ElementLoot<Armor, Variance::Chance, Obtainabilities::Unique> ChestPlateLoot(&Chestplate);
 		ChestPlateLoot.SetWeight(10);
 
-		ElementLoot<Armor, Variance::Chance, Obtainabilities::Common> HelmetLoot(&Helmet);
+		ElementLoot<Armor, Variance::Chance, Obtainabilities::Unique> HelmetLoot(&Helmet);
 		HelmetLoot.SetWeight(150);
 
 		LootTable<Armor, Variance::Chance, Obtainabilities::Common> DropTable;
@@ -57,5 +58,7 @@ int main()
 		DropTable.AddWeightedLoot(&HelmetLoot);
 
 		DropTable.FinalizeLoot();
+		std::list<Armor*> OutLoot;
+		DropTable.GetLoot(OutLoot);
 	}
 }

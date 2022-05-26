@@ -48,7 +48,7 @@ namespace impl
 	class LootObtainabilityController<Obtainabilities::Unique> : public AbstractLootObtainabilityController
 	{
 	public:
-		bool ShouldRemoveFromContainer() const override { return true; }
+		bool ShouldRemoveFromContainer() const override { return bHasLootBeenObtainedOnce; }
 		void Observe_GetLoot() override {
 			bHasLootBeenObtainedOnce = true;
 		}

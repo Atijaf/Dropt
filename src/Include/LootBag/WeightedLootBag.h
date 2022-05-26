@@ -52,11 +52,22 @@ namespace impl
 	{
 		///	This doesn't check if the contents are finalized.  It doesn't have to, as any elements added to this
 		/// Had to confirm that they are finalized prior to being added
+		
+		// If no Loot, then it can't be finalized
+		if (GetNumOfLoot() == 0)
+			return false;
 		if (IsLootBagFinalized()) return true;
 		// Find GCF of all weights in LootArray and reduce the weights based off that;
 		ReduceToGCF();
-		// Sort from greatest to least
-		LootArray.Sort();
+
+		// Sort from greatest to least if not already sorted
+		// This only needs to occur once, as we never rearrange the array in a way that unsorts it
+		// See @RemoveIndexFromArray(uint32_t Index)
+		if (!bIsSorted) {
+			LootArray.Sort();
+			bIsSorted = true;
+		}
+
 		// Loop through array, setting their relative weights
 		DefineRelativeWeights();
 		// Defines a "Dice" that is used when grabbing random elements
@@ -116,7 +127,7 @@ namespace impl
 	template<typename LootType>
 	inline void CoreLootBag<LootType, Variance::Chance>::DefineDice()
 	{
-		BagIntDistrib = std::uniform_int_distribution<uint64_t>(1, SumOfWeights);
+		BagIntDistrib = std::uniform_int_distribution<uint64_t>(1, LootArray[0]->GetRelativeWeight());
 	}
 
 	template<typename LootType>
@@ -124,12 +135,12 @@ namespace impl
 		uint64_t RandomRoll = BagIntDistrib(Dropt::Helper::RandomEngine);
 		uint32_t LootIndex = 0;
 		auto Loot = FindLootFromRandomNumber(RandomRoll, LootIndex);
-		Loot->GetLoot(OutLoot);
-
-		if (AbstractLootDispatcher::ShouldRemoveFromContainer(Loot)) {
-
+		if (Loot->GetLoot(OutLoot)) {
+			if (AbstractLootDispatcher::ShouldRemoveFromContainer(Loot)) {
+				RemoveIndexFromArray(LootIndex);
+			}
+			return true;
 		}
-
 		return false;
 	}
 
