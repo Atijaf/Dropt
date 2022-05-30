@@ -1,72 +1,81 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    <Filter Include="Impl">
+      <UniqueIdentifier>{B7F5867C-A32C-880D-4C19-6E10382F040F}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    <Filter Include="Include">
+      <UniqueIdentifier>{6917EFFE-D5F6-6D9A-DE0E-F9704A6DD4FB}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    <Filter Include="Include\Core">
+      <UniqueIdentifier>{61455C4B-4DA8-EBEF-F62D-24A6E26FB772}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\ElementLoot">
+      <UniqueIdentifier>{E00A358D-4C6C-129B-D5D9-584D413A495A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\Helper">
+      <UniqueIdentifier>{B8E9749E-A4B7-68A4-8D4B-D9CA79B84409}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\LootBag">
+      <UniqueIdentifier>{608E86B8-CC19-F47C-D52A-77714135507D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\LootTable">
+      <UniqueIdentifier>{7E58A9F5-EA6E-A78B-33E6-32AD9F3B7813}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Include\Core\CoreLoot.h">
+      <Filter>Include\Core</Filter>
+    </ClInclude>
     <ClInclude Include="src\Include\Core\Dispatch.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Include\LootBag\AbstractLootBag.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Include\Core\Types.h">
-      <Filter>Header Files</Filter>
+      <Filter>Include\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\Include\Core\LootDispatcherDefinition.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Include\ElementLoot\Loot.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Include\Core\CoreLoot.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Include\LootTable\LootTable.h">
-      <Filter>Header Files</Filter>
+      <Filter>Include\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\Include\Core\LootObtainabilityController.h">
-      <Filter>Header Files</Filter>
+      <Filter>Include\Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\Include\LootBag\ConstantLootBag.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="src\Include\Core\Types.h">
+      <Filter>Include\Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\Include\LootBag\LootBag.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Include\LootTable\AbstractLootTable.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Include\Helper\MArray.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="src\Include\ElementLoot\Loot.h">
+      <Filter>Include\ElementLoot</Filter>
     </ClInclude>
     <ClInclude Include="src\Include\Helper\Globals.h">
-      <Filter>Header Files</Filter>
+      <Filter>Include\Helper</Filter>
     </ClInclude>
-    <ClInclude Include="src\Include\LootBag\WeightedLootBag.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="src\Include\Helper\MArray.h">
+      <Filter>Include\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Include\LootBag\AbstractLootBag.h">
+      <Filter>Include\LootBag</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Include\LootBag\ConstantLootBag.h">
+      <Filter>Include\LootBag</Filter>
     </ClInclude>
     <ClInclude Include="src\Include\LootBag\IntervalLootBag.h">
-      <Filter>Header Files</Filter>
+      <Filter>Include\LootBag</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Include\LootBag\LootBag.h">
+      <Filter>Include\LootBag</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Include\LootBag\WeightedLootBag.h">
+      <Filter>Include\LootBag</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Include\LootTable\AbstractLootTable.h">
+      <Filter>Include\LootTable</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Include\LootTable\LootTable.h">
+      <Filter>Include\LootTable</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Impl\Dropt.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Impl\Dispatch.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Impl</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Impl\Dropt.cpp">
+      <Filter>Impl</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -45,20 +45,30 @@ int main()
 
 	{
 		Armor Chestplate("Chest Armor");
+		Armor NestedChestplate("Nested Chest Plate");
 		Armor Helmet("Head Gear");
+		Armor NestedHelmet("Nested Head Gear");
 
-		ElementLoot<Armor, Variance::Chance, Obtainabilities::Unique> ChestPlateLoot(&Chestplate);
-		ChestPlateLoot.SetWeight(10);
+		
+		ElementLoot<Armor, Variance::Interval, Obtainabilities::Common> ChestPlateLoot(&Chestplate);
+		ChestPlateLoot.SetInterval(2);
 
-		ElementLoot<Armor, Variance::Chance, Obtainabilities::Unique> HelmetLoot(&Helmet);
-		HelmetLoot.SetWeight(150);
+		ElementLoot<Armor, Variance::Interval, Obtainabilities::Common> HelmetLoot(&Helmet);
+		HelmetLoot.SetInterval(5);
+			
+		
+		LootBag<Armor, Variance::Chance, Obtainabilities::Common, Variance::Interval> LootBaga;
+		LootBaga.SetWeight(100);
+		LootBaga.AddLoot(&ChestPlateLoot);
+		LootBaga.AddLoot(&HelmetLoot);
 
 		LootTable<Armor, Variance::Chance, Obtainabilities::Common> DropTable;
-		DropTable.AddWeightedLoot(&ChestPlateLoot);
-		DropTable.AddWeightedLoot(&HelmetLoot);
+		DropTable.AddIntervalLoot(&ChestPlateLoot);
+		DropTable.AddIntervalLoot(&HelmetLoot);
 
 		DropTable.FinalizeLoot();
 		std::list<Armor*> OutLoot;
-		DropTable.GetLoot(OutLoot);
+		for(uint32_t i = 0; i < 100000000; ++i)
+			DropTable.GetLoot(OutLoot);
 	}
 }

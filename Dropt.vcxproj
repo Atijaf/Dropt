@@ -45,14 +45,14 @@
     <OutDir>bin\Debug-windows-x86_64\Dropt\</OutDir>
     <IntDir>bin-int\Debug-windows-x86_64\Dropt\</IntDir>
     <TargetName>Dropt</TargetName>
-    <TargetExt>.dll</TargetExt>
+    <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>bin\Release-windows-x86_64\Dropt\</OutDir>
     <IntDir>bin-int\Release-windows-x86_64\Dropt\</IntDir>
     <TargetName>Dropt</TargetName>
-    <TargetExt>.dll</TargetExt>
+    <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -67,7 +67,6 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ImportLibrary>bin\Debug-windows-x86_64\Dropt\Dropt.lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -84,28 +83,27 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <ImportLibrary>bin\Release-windows-x86_64\Dropt\Dropt.lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\Include\Core\CoreLoot.h" />
     <ClInclude Include="src\Include\Core\Dispatch.h" />
+    <ClInclude Include="src\Include\Core\LootDispatcherDefinition.h" />
+    <ClInclude Include="src\Include\Core\LootObtainabilityController.h" />
+    <ClInclude Include="src\Include\Core\Types.h" />
     <ClInclude Include="src\Include\ElementLoot\Loot.h" />
     <ClInclude Include="src\Include\Helper\Globals.h" />
     <ClInclude Include="src\Include\Helper\MArray.h" />
     <ClInclude Include="src\Include\LootBag\AbstractLootBag.h" />
-    <ClInclude Include="src\Include\Core\LootDispatcherDefinition.h" />
-    <ClInclude Include="src\Include\Core\LootObtainabilityController.h" />
+    <ClInclude Include="src\Include\LootBag\ConstantLootBag.h" />
     <ClInclude Include="src\Include\LootBag\IntervalLootBag.h" />
     <ClInclude Include="src\Include\LootBag\LootBag.h" />
-    <ClInclude Include="src\Include\LootBag\ConstantLootBag.h" />
     <ClInclude Include="src\Include\LootBag\WeightedLootBag.h" />
     <ClInclude Include="src\Include\LootTable\AbstractLootTable.h" />
     <ClInclude Include="src\Include\LootTable\LootTable.h" />
-    <ClInclude Include="src\Include\Core\Types.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Impl\Dispatch.cpp" />

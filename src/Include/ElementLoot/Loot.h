@@ -6,8 +6,6 @@ namespace impl
 
 	template<typename LootType>
 	class CoreElementLoot {
-	public:
-		LootType* GetLoot() const { return Loot; }
 	protected:
 		LootType* Loot;
 	};
@@ -27,7 +25,7 @@ namespace impl
 
 	protected:
 		bool GetLoot_Impl(std::list<LootType*>& OutLoot) override{
-			OutLoot.push_back(CoreElementLoot::GetLoot());
+			OutLoot.push_back(Loot);
 			return true;
 		}
 

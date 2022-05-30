@@ -10,7 +10,7 @@ workspace "Dropt"
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 project "Dropt"
-	kind "SharedLib"
+	kind "ConsoleApp"
 	language "C++"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")

@@ -39,6 +39,7 @@ namespace Dropt {
 			~MArray();
 
 			bool Resize(uint32_t NewSize);
+			void ShrinkToFit();
 			bool DynamicIncrementSize();
 			bool AddElement(T Element);
 
@@ -82,13 +83,27 @@ namespace Dropt {
 		inline bool MArray<T>::Resize(uint32_t NewSize)
 		{
 			if (NewSize == Size) return false;
-
-			T* NewContainer = new T[NewSize];
-			for (uint32_t i = 0; i < ((NewSize > NumOfElements) ? NumOfElements : NewSize); ++i)
-				NewContainer[i] = ArrayOfElements[i];
-			delete[] ArrayOfElements;
-			ArrayOfElements = NewContainer;
+			if (NewSize > 0) {
+				T* NewContainer = new T[NewSize];
+				for (uint32_t i = 0; i < ((NewSize > NumOfElements) ? NumOfElements : NewSize); ++i)
+					NewContainer[i] = ArrayOfElements[i];
+				delete[] ArrayOfElements;
+				ArrayOfElements = NewContainer;
+			}
+			else {
+				delete[] ArrayOfElements;
+			}
+			NumOfElements = NewSize;
+			Size = NewSize;
 			return true;
+		}
+
+		template<typename T>
+		inline void MArray<T>::ShrinkToFit()
+		{
+			if (Size == NumOfElements)
+				return;
+			Resize(NumOfElements);
 		}
 
 		template<typename T>

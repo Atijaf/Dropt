@@ -11,8 +11,6 @@ namespace impl
 		bool IsLootTableFinalized() const { return bLootTableFinalized; }
 		virtual bool FinalizeLootTable() = 0;
 	protected:
-
-	private:
 		bool bLootTableFinalized = false;
 	};
 
@@ -30,17 +28,20 @@ namespace impl
 	public:
 		template<Obtainabilities Obtainability>
 		void AddWeightedLoot(CoreLoot<LootType, Variance::Chance, Obtainability>* Loot) {
-			WeightedLootBag.AddLoot(Loot);
+			if (CanAddLoot(Loot))
+				WeightedLootBag.AddLoot(Loot);
 		}
 
 		template<Obtainabilities Obtainability>
 		void AddIntervalLoot(CoreLoot<LootType, Variance::Interval, Obtainability>* Loot) {
-			IntervalLootBag.AddLoot(Loot);
+			if(CanAddLoot(Loot))
+				IntervalLootBag.AddLoot(Loot);
 		}
 
 		template<Obtainabilities Obtainability>
 		void AddConstantLoot(CoreLoot<LootType, Variance::Constant, Obtainability>* Loot) {
-			ConstantLootBag.AddLoot(Loot);
+			if (CanAddLoot(Loot))
+				ConstantLootBag.AddLoot(Loot);
 		}
 
 		uint64_t GetTotalLoot() { 
@@ -52,20 +53,36 @@ namespace impl
 
 	protected:
 		bool RollForLoot(std::list<LootType*>& OutLoot) {
-			if (GetTotalLoot() == 0)
-				return false;
-			return (WeightedLootBag.GetLoot(OutLoot) ||
-					IntervalLootBag.GetLoot(OutLoot) ||
-					ConstantLootBag.GetLoot(OutLoot));
+			if (WeightedLootBag.GetNumOfLoot() > 0)
+				WeightedLootBag.GetLoot(OutLoot);
+
+			if (IntervalLootBag.GetNumOfLoot() > 0)
+				IntervalLootBag.GetLoot(OutLoot);
+
+			if (ConstantLootBag.GetNumOfLoot() > 0)
+				ConstantLootBag.GetLoot(OutLoot);
+
+			return (OutLoot.size() > 0);
 		}
 
 		bool FinalizeLootTable() {
-			return (WeightedLootBag.FinalizeLoot() &&
-					IntervalLootBag.FinalizeLoot() &&
-					ConstantLootBag.FinalizeLoot());
+			bLootTableFinalized = (	WeightedLootBag.FinalizeLoot() &&
+									IntervalLootBag.FinalizeLoot() &&
+									ConstantLootBag.FinalizeLoot());
+			return bLootTableFinalized;
 		}
 
-		//bool FinalizeLootBag_impl();
+		template<Variance Variant>
+		bool CanAddLoot(CoreLootContainer<LootType, Variant>* Loot) const { return !this->IsLootTableFinalized(); }
+		template<> bool CanAddLoot<Variance::Chance>(CoreLootContainer<LootType, Variance::Chance>* Loot) const {
+			return(	!this->IsLootTableFinalized() &&	// If this table is finalized, nothing else can be added 
+					Loot->GetWeight() != 0);			// Elements with 0 weight cannot be added
+		}
+		template<> bool CanAddLoot<Variance::Interval>(CoreLootContainer<LootType, Variance::Interval>* Loot) const {
+			return(	!this->IsLootTableFinalized() &&	// If this table is finalized, nothing else can be added 
+					Loot->GetInterval() != 0);			// Elements with 0 Interval cannot be added
+		}
+
 
 		// LootBag with Weighted Drops
 		Core::LootBag<LootType, Variance::Constant, Obtainabilities::Common, Variance::Chance> WeightedLootBag;

@@ -36,14 +36,13 @@ namespace impl
 			return GetLoot_Impl(OutLoot);
 		}
 
-		// Defined in AbstractLootDispatcher
 		virtual bool FinalizeLoot() override = 0;
 		virtual bool IsFinalized() const override = 0;
 	protected:
 	private:
 		
 		virtual bool GetLoot_Impl(std::list<LootType*>& OutLoot) = 0;
-		bool ShouldRemoveFromContainer() const override final {
+		bool ShouldRemoveFromContainer() const override {
 			return LootObtainabilityController::ShouldRemoveFromContainer();
 		}
 	};

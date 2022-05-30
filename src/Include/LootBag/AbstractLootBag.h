@@ -21,15 +21,17 @@ namespace impl
 			return bIsFinalized;
 		}
 
-		// Threshhold for the NumOfElementsRemoved before we should reallocate LootArray
+		// Threshhold for the LootArrayIndexOffset before we should reallocate LootArray
 		static const uint16_t ResizeArrayThreshold = 1;
-		uint16_t NumOfElementsRemoved = 0;
+		// Offset Size by this amount
+		uint16_t LootArrayIndexOffset = 0;
 
 		bool bIsFinalized = false;
-		bool bIsSorted = false;
 	private:
 		virtual bool FinalizeLootBag_impl() = 0;
 	};
+
+
 	/// <summary>
 	/// Very Base of a Loot Bag.  Provides implementation for adding loot, and forces GrabLoot to be defined in any children of this class
 	/// </summary>
@@ -41,7 +43,7 @@ namespace impl
 		template<Obtainabilities Obtainability>
 		// Catch all add loot function
 		bool AddLoot(CoreLoot<LootType, ContentVariant, Obtainability>* Loot);
-		uint32_t GetNumOfLoot() const { return LootArray.GetNumOfElements(); }
+		uint32_t GetNumOfLoot() const { return LootArray.GetNumOfElements() - LootArrayIndexOffset; }
 
 	protected:
 		/// <summary>
@@ -57,12 +59,10 @@ namespace impl
 		virtual ~BaseLootBag();
 
 		virtual bool GrabLoot(std::list<LootType*>& OutLoot) { return false; }
-		void RemoveIndexFromArray(const uint32_t Index);
+		virtual void RemoveIndexFromArray(const uint32_t Index);
 
 		std::uniform_int_distribution<uint64_t> BagIntDistrib;
 		Dropt::Helper::MArray<CoreLootContainer<LootType, ContentVariant>*> LootArray;
-		
-	private:
 	};
 
 	template<typename LootType, Variance ContentVariant>
@@ -84,7 +84,7 @@ namespace impl
 	template<Obtainabilities Obtainability>
 	inline bool BaseLootBag<LootType, ContentVariant>::AddLoot(CoreLoot<LootType, ContentVariant, Obtainability>* Loot)
 	{
-		// Any Loot being added a Loot Bag must be finalized..  i.e. Confirmed to be able to return loot
+		// Any Loot being added to a Loot Bag must be finalized..  i.e. Confirmed to be able to return loot
 		// This solves circular nested Loot.
 		if (!Loot->IsFinalized()) {
 			// Try to finalize the Loot
@@ -97,6 +97,7 @@ namespace impl
 	template<typename LootType, Variance ContentVariant>
 	inline void BaseLootBag<LootType, ContentVariant>::RemoveIndexFromArray(const uint32_t Index)
 	{
+		bIsFinalized = false;
 		// Remove loot by shifting all elements from the right to Index
 		// i.e. Move Element at Index to the last index
 
@@ -106,27 +107,19 @@ namespace impl
 		// 3<5
 		// 3=4
 		// 5<5 no
-		auto tmp = LootArray[Index];
 		uint32_t i = Index;
 		while (i + 1 < GetNumOfLoot()) {
 			LootArray[i] = LootArray[i + 1];
 			++i;
 		}
-		LootArray[i] = tmp;
-		LootArray[i]->SetWeight(0);
-		LootArray[i]->SetRelativeWeight(0);
+		LootArray[i] = nullptr;;
 
 		// Increment Counter, check if we reached threshold to resize array
-		++NumOfElementsRemoved;
-		if (NumOfElementsRemoved >= ResizeArrayThreshold) {
-			LootArray.Resize(GetNumOfLoot() - NumOfElementsRemoved);
-			NumOfElementsRemoved = 0;
+		++LootArrayIndexOffset;
+		if (LootArrayIndexOffset >= ResizeArrayThreshold) {
+			LootArray.Resize(GetNumOfLoot());
+			LootArrayIndexOffset = 0;
+			this->FinalizeLootBag();
 		}
-		// Since the LootBag has been modified, it needs to be finalized again
-		this->FinalizeLootBag();
-
-		
-
 	}
-
 }

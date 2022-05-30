@@ -34,6 +34,14 @@ namespace Core
 			return GrabLoot(OutLoot);
 		}
 
+	private:
+		// Returns true if the Loot Bag has no contents OR if it was set to be removed after x amount of grabs (Unique/variable LootBag)
+		// This means that it will be removed from it's owner's container
+		bool ShouldRemoveFromContainer() const override {
+			return (LootObtainabilityController::ShouldRemoveFromContainer() ||
+					this->GetNumOfLoot() == 0);
+		}
+
 	};
 
 }

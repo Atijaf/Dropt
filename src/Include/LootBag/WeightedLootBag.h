@@ -23,12 +23,10 @@ namespace impl
 		// Obtains loot from the Bag of Weighted Elements
 		bool GrabLoot(std::list<LootType*>& OutLoot) override;
 
+		virtual void RemoveIndexFromArray(const uint32_t Index) override;
+
 		// Performs final actions, required to allow this bag to be grabbed from
 		virtual bool FinalizeLootBag_impl() override final;
-
-	private:
-		// Returns the sum of all of this bag's contents.  Note that this is not the weight of this bag, IF this bag is a weighted bag itself
-		uint64_t GetSumWeightOfContents() const { return SumOfWeights; }
 		// Finds GCF amongs all elements weights (5,10,15: GCF is 5)
 		uint32_t FindGCFOfWeights() const;
 		// Reduces all elements weights based on GCF(5,10,15: GCF is 5 : 1,2,3)
@@ -41,9 +39,9 @@ namespace impl
 		// Finds Loot from a Random Number.
 		// Returns Loot, along with it's index, 
 		CoreLootContainer<LootType, Variance::Chance>* FindLootFromRandomNumber(uint64_t RandomNumber, uint32_t& OutLootIndex);
-
-		// Sum of all content's weights
-		uint64_t SumOfWeights;
+		bool bIsSorted = false;
+		// Offset Size by this amount
+		uint16_t LootArrayIndexOffset = 0;
 	};
 
 
@@ -81,8 +79,22 @@ namespace impl
 	{
 		const uint32_t GCF = FindGCFOfWeights();
 		if (GCF > 1) 
-			for (uint32_t i = 0; i < GetNumOfLoot(); ++i) 
+			for (uint32_t i = 0; i < GetNumOfLoot(); ++i)
 				LootArray[i]->SetWeight(LootArray[i]->GetWeight() / GCF);
+	}
+
+	template<typename LootType>
+	inline void CoreLootBag<LootType, Variance::Chance>::RemoveIndexFromArray(const uint32_t Index)
+	{
+		// Call Parent Function (Like super)
+		BaseLootBag::RemoveIndexFromArray(Index);
+
+		// If the Offset is 0, then the Parent call has finished all work that needed to be done
+		if (LootArrayIndexOffset == 0)
+			return;
+		// Otherwise, we NEED to perform these actions
+		DefineRelativeWeights();
+		DefineDice();
 	}
 
 	template<typename LootType>
@@ -99,7 +111,7 @@ namespace impl
 			return GCD(b % a, a);
 		};
 
-		uint32_t Index = LootArray.GetNumOfElements() - 1;
+		uint32_t Index = this->GetNumOfLoot() - 1;
 		uint32_t Result = LootArray[Index]->GetWeight();
 		--Index;
 		for (uint32_t i = 1; i < LootArray.GetNumOfElements(); ++i, --Index) {
@@ -127,21 +139,28 @@ namespace impl
 	template<typename LootType>
 	inline void CoreLootBag<LootType, Variance::Chance>::DefineDice()
 	{
-		BagIntDistrib = std::uniform_int_distribution<uint64_t>(1, LootArray[0]->GetRelativeWeight());
+		BagIntDistrib = std::uniform_int_distribution<uint64_t>(0, LootArray[0]->GetRelativeWeight() - 1);
 	}
 
 	template<typename LootType>
 	inline bool CoreLootBag<LootType, Variance::Chance>::GrabLoot(std::list<LootType*>& OutLoot) {
-		uint64_t RandomRoll = BagIntDistrib(Dropt::Helper::RandomEngine);
+		bool bReturnFlag = true;
+		CoreLootContainer<LootType, Variance::Chance>* Loot = nullptr;
 		uint32_t LootIndex = 0;
-		auto Loot = FindLootFromRandomNumber(RandomRoll, LootIndex);
-		if (Loot->GetLoot(OutLoot)) {
-			if (AbstractLootDispatcher::ShouldRemoveFromContainer(Loot)) {
-				RemoveIndexFromArray(LootIndex);
-			}
-			return true;
+		if (GetNumOfLoot() == 1) {
+			Loot = LootArray[0];
 		}
-		return false;
+		else {
+			uint64_t RandomRoll = BagIntDistrib(Dropt::Helper::RandomEngine);
+			Loot = FindLootFromRandomNumber(RandomRoll, LootIndex);
+		}
+		if (!Loot->GetLoot(OutLoot))
+			bReturnFlag = false;// Debug.  This shouldn't ever happen, but if it does, investigate
+								// Might happen if this function is called on a loot bag that has no contents
+		if (AbstractLootDispatcher::ShouldRemoveFromContainer(Loot))
+			RemoveIndexFromArray(LootIndex);
+		
+		return bReturnFlag;
 	}
 
 	template<typename LootType>
@@ -151,7 +170,6 @@ namespace impl
 		//Indexes:	 0,  1,  2, 3, 4
 		//			65, 35, 20, 5, 1
 		// Random Number: 2
-
 		OutLootIndex = 0; // Default
 		uint32_t i = 1;
 		for (i; i < GetNumOfLoot(); i++) {
