@@ -7,8 +7,7 @@
 
 int main()
 {
-	using namespace impl;
-	using namespace Core;
+	using namespace Dropt::impl;
 
 	struct Armor
 	{
@@ -31,7 +30,7 @@ int main()
 		LootBag<Armor, Variance::Chance, Obtainabilities::Common, Variance::Chance> NestedArmorBag;
 		LootBag<Armor, Variance::Chance, Obtainabilities::Common, Variance::Chance> ArmorBag;
 
-		Core::LootTable<Armor, Variance::Chance, Obtainabilities::Common> DropTable;
+		LootTable<Armor, Variance::Chance, Obtainabilities::Common> DropTable;
 
 		NestedArmorBag.AddLoot(&ArmorLoot);
 
@@ -45,30 +44,24 @@ int main()
 
 	{
 		Armor Chestplate("Chest Armor");
-		Armor NestedChestplate("Nested Chest Plate");
 		Armor Helmet("Head Gear");
-		Armor NestedHelmet("Nested Head Gear");
+		Armor LegArmor("Leg Armor");
+		Armor Gloves("Hand Armor");
 
 		
-		ElementLoot<Armor, Variance::Interval, Obtainabilities::Common> ChestPlateLoot(&Chestplate);
-		ChestPlateLoot.SetInterval(2);
-
-		ElementLoot<Armor, Variance::Interval, Obtainabilities::Common> HelmetLoot(&Helmet);
-		HelmetLoot.SetInterval(5);
-			
-		
-		LootBag<Armor, Variance::Chance, Obtainabilities::Common, Variance::Interval> LootBaga;
-		LootBaga.SetWeight(100);
-		LootBaga.AddLoot(&ChestPlateLoot);
-		LootBaga.AddLoot(&HelmetLoot);
+		ElementLoot<Armor, Variance::Constant, Obtainabilities::Unique> ChestPlateLoot(&Chestplate);
+		ElementLoot<Armor, Variance::Constant, Obtainabilities::Unique> HelmetLoot(&Helmet);
+		ElementLoot<Armor, Variance::Constant, Obtainabilities::Common> LegLoot(&LegArmor);
+		ElementLoot<Armor, Variance::Constant, Obtainabilities::Unique> HandLoot(&Gloves);
 
 		LootTable<Armor, Variance::Chance, Obtainabilities::Common> DropTable;
-		DropTable.AddIntervalLoot(&ChestPlateLoot);
-		DropTable.AddIntervalLoot(&HelmetLoot);
+		DropTable.AddLoot(&ChestPlateLoot);
+		DropTable.AddLoot(&HelmetLoot);
+		DropTable.AddLoot(&LegLoot);
+		DropTable.AddLoot(&HandLoot);
 
 		DropTable.FinalizeLoot();
 		std::list<Armor*> OutLoot;
-		for(uint32_t i = 0; i < 100000000; ++i)
-			DropTable.GetLoot(OutLoot);
+		DropTable.GetLoot(OutLoot);
 	}
 }

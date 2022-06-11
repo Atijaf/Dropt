@@ -97,6 +97,7 @@
     <ClInclude Include="src\Include\ElementLoot\Loot.h" />
     <ClInclude Include="src\Include\Helper\Globals.h" />
     <ClInclude Include="src\Include\Helper\MArray.h" />
+    <ClInclude Include="src\Include\Interface.h" />
     <ClInclude Include="src\Include\LootBag\AbstractLootBag.h" />
     <ClInclude Include="src\Include\LootBag\ConstantLootBag.h" />
     <ClInclude Include="src\Include\LootBag\IntervalLootBag.h" />

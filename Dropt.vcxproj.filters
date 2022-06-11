@@ -69,6 +69,7 @@
     <ClInclude Include="src\Include\LootTable\LootTable.h">
       <Filter>Include\LootTable</Filter>
     </ClInclude>
+    <ClInclude Include="src\Include\Interface.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Impl\Dispatch.cpp">
