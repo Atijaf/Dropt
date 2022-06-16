@@ -6,16 +6,21 @@ namespace Dropt {
 	namespace impl
 	{
 
+		template<typename LootType>
+		class AbstractCoreLoot : public AbstractLootDispatcher {
+		public:
+			virtual bool GetLoot(std::list<LootType*>& OutLoot) = 0;
+		};
+
 		/// <summary>
 		/// A type of base parent for storing arrays of elements containing both a LootType and Variant
 		/// </summary>
 		/// <typeparam name="LootType">: Type of Loot (Armor, Weapon, Potion)</typeparam>
 		/// <typeparam name="Variant">: Variant of Loot (Chance, Weight, Constant)</typeparam>
 		template<typename LootType, Variance Variant>
-		class CoreLootContainer : public AbstractLootDispatcher, public LootDispatchVariance<Variant>
+		class CoreLootContainer : public AbstractCoreLoot<LootType>, public LootDispatchVariance<Variant>
 		{
 		public:
-			virtual bool GetLoot(std::list<LootType*>& OutLoot) = 0;
 
 		protected:
 		};

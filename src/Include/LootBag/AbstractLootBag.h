@@ -9,8 +9,8 @@ namespace Dropt {
 	{
 
 		// Forward Declaration
-		template<typename LootType, Variance ContentVariant>
-		class CoreLootBag;
+		//template<typename LootType, Variance ContentVariant>
+		//class CoreLootBag;
 
 		class AbstractLootBag {
 		public:
