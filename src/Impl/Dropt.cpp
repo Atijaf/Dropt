@@ -26,12 +26,12 @@ int main()
 //#pragma diag_suppress 265
 //#endif
 
-	Dropt::Interface::LootTypeFactory<Armor> Factory;
-	//Factory.CreateLootTable_Weighted<Obtainabilities::Variable>(2, 5);
-	//Factory.CreateLootTable_Weighted<Obtainabilities::Common>(2);
+	//Dropt::Interface Inter;
+	//Dropt::Interface::LootTypeFactory<Armor> Factory(Inter);
 
+	//Inter.testfunction<Armor, Obtainabilities::Unique>();
 
-	Factory.CreateLootTable_Weighted<Obtainabilities::Variable>(5, 10);
+	//Factory.CreateLootTable_Weighted<Obtainabilities::Unique>("PoopTable",50, 3);
 
 	//auto tmp2 = Inter.CreateLootTable<Armor, Variance::Interval, Obtainabilities::Common>();
 

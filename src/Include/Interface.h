@@ -29,97 +29,62 @@ namespace Dropt {
 	class Interface
 	{
 	public:	
-/*		
-		template<typename LootType, Variance Variant, Obtainabilities Obtainability>
-		LootTable<LootType, Variant, Obtainability>* CreateLootTable(const char* TableName) {
-			LootTable<LootType, Variant, Obtainability>* Out = new LootTable<LootType, Variant, Obtainability>();
-			AddToMemoryContainer(TableName, Out);
-			return Out;
-		}
-*/
+		
 
-		template<Obtainabilities Obtain>
-		static typename std::enable_if<Obtain == Obtainabilities::Unique, int>::type
-		check2() {
-			return 1;
-		}
-
-		/// <summary>
-		/// Creates a user friendly interface for creating Loot of a specific type
-		/// </summary>
-		/// <typeparam name="LootType">:	Type of loot that will be stored </typeparam>
-		/// 
-		/// 
-		template<typename LootType>
-		class LootTypeFactory
+		template<typename LootType, Obtainabilities Obtainability>
+		LootTable<LootType, Variance::Chance, Obtainability>* CreateLootTable_Weighted(const char* TableName, uint32_t Weight, uint32_t MaxNumObtainable)
 		{
-		public:
-			LootTypeFactory() {};
-
-		public:
-
-			template<Obtainabilities Obtainability>
-			LootTable<LootType, Variance::Chance, Obtainability>*
-				CreateLootTable_Weighted(uint32_t Weight) {
-				return nullptr;	//SFINAE
-			}
-
-			// Creates a weighted Loot Table that can be obtained x amount of times
-			// CAN ONLY be used when Obtainability is set to Variable
-			template<Obtainabilities Obtainability>
-				typename std::enable_if<Obtainability == Obtainabilities::Variable,
-				LootTable<LootType, Variance::Chance, Obtainabilities::Variable>*>::type
-				CreateLootTable_Weighted(uint32_t Weight, uint32_t MaxNumObtainable) {
-				return nullptr;	//SFINAE
-			}
-
-			
-
-		public:
-			template<>
-			LootTable<LootType, Variance::Chance, Obtainabilities::Common>*
-				CreateLootTable_Weighted<Obtainabilities::Common>(uint32_t Weight) {
-				auto Out = new LootTable<LootType, Variance::Chance, Obtainabilities::Common>();
-				return Out;
-			}
-			template<>
-			LootTable<LootType, Variance::Chance, Obtainabilities::Unique>*
-				CreateLootTable_Weighted<Obtainabilities::Unique>(uint32_t Weight) {
-				auto Out = new LootTable<LootType, Variance::Chance, Obtainabilities::Unique>();
-				return Out;
-			}
-			template<>
-			LootTable<LootType, Variance::Chance, Obtainabilities::Variable>*
-				CreateLootTable_Weighted<Obtainabilities::Variable>(uint32_t Weight, uint32_t MaxNumObtainable) {
-				auto Out = new LootTable<LootType, Variance::Chance, Obtainabilities::Variable>();
-				return Out;
-			}
-
-		};
+			LootTypeFactory<LootType> Fact(*this);
+			return Fact.CreateLootTable_Weighted<Obtainability>(TableName, Weight, MaxNumObtainable);
+		}
 
 
-
-	protected:
-
-
+	private:
 		bool AddToMemoryContainer(const char* DataName, AbstractLootDispatcher* Data) {
 			MemoryContainer.insert(std::pair<const char*, AbstractLootDispatcher*>(DataName, Data));
 			return true;
 		}
-
-		/*
-		template<typename LootType, Obtainabilities Obtain>
-		const LootTable<LootType, Variance::Chance, Obtain>* 
-			CreateLootTable<Variance::Chance>(uint32_t Weight) {
-			return nullptr;
-		}
-		*/
-
-
-
-
-	private:
 		std::unordered_multimap<std::string, AbstractLootDispatcher*> MemoryContainer;
+
+
+		template<typename LootType>
+		class LootTypeFactory
+		{
+		private:
+			Interface& InterfaceRef;
+
+			template<Variance Variant, Obtainabilities Obtainability>
+			LootTable<LootType, Variant, Obtainability>* InitBaseTable(const char* TableName) {
+				auto Out = new LootTable<LootType, Variant, Obtainability>();
+				InterfaceRef.AddToMemoryContainer(TableName, Out);
+				return Out;
+			}
+			template<Obtainabilities Obtainability>
+			LootTable<LootType, Variance::Chance, Obtainability>* InitWeightedTable(const char* TableName, uint32_t Weight) {
+				auto Out = InitBaseTable<LootTable, Variance::Chance, Obtainability>(TableName);
+				Out->SetWeight(Weight);
+				return Out;
+			}
+		public:
+			LootTypeFactory(Interface& _InterfaceRef) :
+				InterfaceRef(_InterfaceRef) {};
+
+			template<Obtainabilities Obtainability>
+			LootTable<LootType, Variance::Chance, Obtainability>*
+				CreateLootTable_Weighted(const char* TableName, uint32_t Weight, uint32_t MaxNumObtainable = -1) {
+				auto OutLootTable = InitWeightedTable<Obtainability>(TableName, Weight);
+				return OutLootTable;
+			}
+
+			template<>
+			LootTable<LootType, Variance::Chance, Obtainabilities::Variable>*
+				CreateLootTable_Weighted<Obtainabilities::Variable>(const char* TableName, uint32_t Weight, uint32_t MaxNumObtainable) {
+
+				auto OutLootTable = InitWeightedTable<Obtainability>(TableName, Weight);
+				OutLootTable->SetMaxNumOfTimesLootCanBeObtained(MaxNumObtainable);
+				return OutLootTable;
+			}
+		};
 
 	};
 }
