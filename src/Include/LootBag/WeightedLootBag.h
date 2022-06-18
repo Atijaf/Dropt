@@ -10,14 +10,11 @@ namespace Dropt {
 		/// </summary>
 		/// <typeparam name="LootType"></typeparam>
 		template<typename LootType>
-		class CoreLootBag<LootType, Variance::Chance> : public BaseLootBag<LootType, Variance::Chance>
+		class CoreLootBagImpl<LootType, Variance::Chance> : public CoreLootBagInterface<LootType, Variance::Chance>
 		{
 		public:
-			CoreLootBag(uint32_t InitialSize) :	// Initialization list
-				BaseLootBag([](CoreLootContainer<LootType, Variance::Chance>* A, CoreLootContainer<LootType, Variance::Chance>* B)
-					{ return(*A > *B); },	// Comparator
-					InitialSize				// Initial Size of array
-				)
+			CoreLootBagImpl(uint32_t InitialSize, AbstractCoreLoot<LootType>& _Sibling) :	// Initialization list
+				CoreLootBagInterface(InitialSize, _Sibling)
 			{}
 
 		protected:
@@ -47,15 +44,8 @@ namespace Dropt {
 
 
 		template<typename LootType>
-		inline bool impl::CoreLootBag<LootType, Variance::Chance>::FinalizeLootBag_impl()
+		inline bool impl::CoreLootBagImpl<LootType, Variance::Chance>::FinalizeLootBag_impl()
 		{
-			///	This doesn't check if the contents are finalized.  It doesn't have to, as any elements added to this
-			/// Had to confirm that they are finalized prior to being added
-
-			// If no Loot, then it can't be finalized
-			if (GetNumOfLoot() == 0)
-				return false;
-			if (IsLootBagFinalized()) return true;
 			// Find GCF of all weights in LootArray and reduce the weights based off that;
 			ReduceToGCF();
 
@@ -63,7 +53,10 @@ namespace Dropt {
 			// This only needs to occur once, as we never rearrange the array in a way that unsorts it
 			// See @RemoveIndexFromArray(uint32_t Index)
 			if (!bIsSorted) {
-				LootArray.Sort();
+				LootArray.Sort([](CoreLootContainer<LootType, Variance::Chance>* A, CoreLootContainer<LootType, Variance::Chance>* B)
+					{
+						return(*A > *B);
+					});
 				bIsSorted = true;
 			}
 
@@ -76,7 +69,7 @@ namespace Dropt {
 		}
 
 		template<typename LootType>
-		inline void impl::CoreLootBag<LootType, Variance::Chance>::ReduceToGCF()
+		inline void impl::CoreLootBagImpl<LootType, Variance::Chance>::ReduceToGCF()
 		{
 			const uint32_t GCF = FindGCFOfWeights();
 			if (GCF > 1)
@@ -85,10 +78,10 @@ namespace Dropt {
 		}
 
 		template<typename LootType>
-		inline void CoreLootBag<LootType, Variance::Chance>::RemoveIndexFromArray(const uint32_t Index)
+		inline void CoreLootBagImpl<LootType, Variance::Chance>::RemoveIndexFromArray(const uint32_t Index)
 		{
 			// Call Parent Function (Like super)
-			BaseLootBag::RemoveIndexFromArray(Index);
+			CoreLootBagInterface::RemoveIndexFromArray(Index);
 
 			// If the Offset is 0, then the Parent call has finished all work that needed to be done
 			if (LootArrayIndexOffset == 0)
@@ -99,7 +92,7 @@ namespace Dropt {
 		}
 
 		template<typename LootType>
-		inline uint32_t CoreLootBag<LootType, Variance::Chance>::FindGCFOfWeights() const
+		inline uint32_t CoreLootBagImpl<LootType, Variance::Chance>::FindGCFOfWeights() const
 		{
 
 			if (LootArray.GetNumOfElements() == 0)
@@ -126,7 +119,7 @@ namespace Dropt {
 		}
 
 		template<typename LootType>
-		inline void impl::CoreLootBag<LootType, Variance::Chance>::DefineRelativeWeights()
+		inline void impl::CoreLootBagImpl<LootType, Variance::Chance>::DefineRelativeWeights()
 		{
 			uint32_t Index = GetNumOfLoot() - 1;
 			uint64_t WeightSum = 0;
@@ -138,13 +131,13 @@ namespace Dropt {
 		}
 
 		template<typename LootType>
-		inline void CoreLootBag<LootType, Variance::Chance>::DefineDice()
+		inline void CoreLootBagImpl<LootType, Variance::Chance>::DefineDice()
 		{
 			BagIntDistrib = std::uniform_int_distribution<uint64_t>(0, LootArray[0]->GetRelativeWeight() - 1);
 		}
 
 		template<typename LootType>
-		inline bool CoreLootBag<LootType, Variance::Chance>::GrabLoot(std::list<LootType*>& OutLoot) {
+		inline bool CoreLootBagImpl<LootType, Variance::Chance>::GrabLoot(std::list<LootType*>& OutLoot) {
 			bool bReturnFlag = true;
 			CoreLootContainer<LootType, Variance::Chance>* Loot = nullptr;
 			uint32_t LootIndex = 0;
@@ -165,7 +158,7 @@ namespace Dropt {
 		}
 
 		template<typename LootType>
-		inline CoreLootContainer<LootType, Variance::Chance>* impl::CoreLootBag<LootType, Variance::Chance>::
+		inline CoreLootContainer<LootType, Variance::Chance>* impl::CoreLootBagImpl<LootType, Variance::Chance>::
 			FindLootFromRandomNumber(uint64_t RandomNumber, uint32_t& OutLootIndex)
 		{
 			//Indexes:	 0,  1,  2, 3, 4

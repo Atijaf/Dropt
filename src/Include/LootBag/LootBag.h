@@ -16,11 +16,14 @@ namespace Dropt {
 					Variance		Variant,
 					Obtainabilities Obtainability,
 					Variance		ContentVariant>
-		class LootBag : public CoreLootBag<LootType, ContentVariant>, public CoreLoot<LootType, Variant, Obtainability>
+		class LootBag : public CoreLootBagImpl<LootType, ContentVariant>, public CoreLoot<LootType, Variant, Obtainability>
 		{
 		public:
+
+			using CoreLootBag::GetLoot;
+
 			LootBag(uint32_t InitialSize = 10) :
-				CoreLootBag(InitialSize) {};
+				CoreLootBagImpl(InitialSize,(*this)) {};
 			// Performs final actions on a Loot Table to prepare it for grabs
 			bool FinalizeLoot() override {
 				return FinalizeLootBag();

@@ -16,10 +16,6 @@ namespace Dropt {
 		};
 
 		/// <summary>
-		/// Controller for Obtaining loot from the Loot Table
-		/// </summary>
-
-		/// <summary>
 		/// Forces Variant to remain the same amongst an array of these objects
 		/// </summary>
 		/// <typeparam name="Variant"> How the Loot Table is obtained (If stored within another Loot Table or Loot Bag)</typeparam>
@@ -56,7 +52,17 @@ namespace Dropt {
 				return 0;
 			}
 
+			// Updates OutLoot and returns true if loot is obtained
+			bool GetLoot(std::list<LootType*>& OutLoot) {
+				return Sibling.GetLoot(OutLoot);
+			}
+
 		protected:
+			CoreLootTable(AbstractCoreLoot<LootType>& _Sibling) :
+				Sibling(_Sibling)
+			{
+
+			}
 			bool RollForLoot(std::list<LootType*>& OutLoot) {
 				if (WeightedLootBag.GetNumOfLoot() > 0)
 					WeightedLootBag.GetLoot(OutLoot);
@@ -95,6 +101,21 @@ namespace Dropt {
 			LootBag<LootType, Variance::Constant, Obtainabilities::Common, Variance::Interval> IntervalLootBag;
 			// LootBag with Constant Drops
 			LootBag<LootType, Variance::Constant, Obtainabilities::Common, Variance::Constant> ConstantLootBag;
+
+
+		private:
+			AbstractCoreLoot<LootType>& Sibling;
+		};
+
+		template<typename LootType, Variance Variant>
+		class CoreVariantLootTable : public CoreLootTable<LootType>
+		{
+		protected:
+			CoreVariantLootTable(AbstractCoreLoot<LootType>& _Sibling) :
+				CoreLootTable(_Sibling)
+			{
+				std::cout << "Here";
+			}
 
 		};
 	}

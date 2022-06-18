@@ -9,33 +9,26 @@ namespace Dropt {
 		/// </summary>
 		/// <typeparam name="LootType"></typeparam>
 		template<typename LootType>
-		class CoreLootBag<LootType, Variance::Constant> : public BaseLootBag<LootType, Variance::Constant>
+		class CoreLootBagImpl<LootType, Variance::Constant> : public CoreLootBagInterface<LootType, Variance::Constant>
 		{
 		public:
-			CoreLootBag(uint32_t InitialSize) :
-				BaseLootBag([](CoreLootContainer<LootType, Variance::Constant>* A, CoreLootContainer<LootType, Variance::Constant>* B) {
-				return(*A > *B); },
-					InitialSize
-					)
-			{};
+			CoreLootBagImpl(uint32_t InitialSize, AbstractCoreLoot<LootType>& _Sibling) :
+				CoreLootBagInterface(InitialSize,_Sibling)
+			{
+
+			};
 		protected:
 			virtual bool GrabLoot(std::list<LootType*>& OutLoot) override final;
-			virtual bool FinalizeLootBag_impl() override final;
 			// Removes all elements that should be removed
 			void EliminateRemovableIndexes();
 			uint32_t* GetRangesToRemove(uint32_t& OutSize);
 			void RemoveRangeOfElements(const uint32_t Min, const uint32_t Max);
 		};
 
-		template<typename LootType>
-		inline bool impl::CoreLootBag<LootType, Variance::Constant>::FinalizeLootBag_impl()
-		{
-			// Return true if contains 1 or more loot
-			return (GetNumOfLoot() != 0);
-		}
+
 
 		template<typename LootType>
-		inline bool CoreLootBag<LootType, Variance::Constant>::GrabLoot(std::list<LootType*>& OutLoot) {
+		inline bool CoreLootBagImpl<LootType, Variance::Constant>::GrabLoot(std::list<LootType*>& OutLoot) {
 
 			bool bReturnFlag = true;
 			if (this->GetNumOfLoot() > 0) {
@@ -55,7 +48,7 @@ namespace Dropt {
 		}
 
 		template<typename LootType>
-		inline uint32_t* impl::CoreLootBag<LootType, Variance::Constant>::GetRangesToRemove(uint32_t& OutSize)
+		inline uint32_t* impl::CoreLootBagImpl<LootType, Variance::Constant>::GetRangesToRemove(uint32_t& OutSize)
 		{
 			OutSize = 0;
 
@@ -109,7 +102,7 @@ namespace Dropt {
 		}
 
 		template<typename LootType>
-		inline void impl::CoreLootBag<LootType, Variance::Constant>::EliminateRemovableIndexes()
+		inline void impl::CoreLootBagImpl<LootType, Variance::Constant>::EliminateRemovableIndexes()
 		{
 			// Loop through entire array to get all the indexes that should be removed
 			uint32_t ArraySize = 0;
@@ -128,7 +121,7 @@ namespace Dropt {
 		}
 
 		template<typename LootType>
-		inline void impl::CoreLootBag<LootType, Variance::Constant>::RemoveRangeOfElements(const uint32_t Min, const uint32_t Max)
+		inline void impl::CoreLootBagImpl<LootType, Variance::Constant>::RemoveRangeOfElements(const uint32_t Min, const uint32_t Max)
 		{
 			// Remove loot by shifiting all elements from right to Index;
 			uint32_t ShiftIndex = Min;

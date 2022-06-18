@@ -26,14 +26,12 @@ int main()
 //#pragma diag_suppress 265
 //#endif
 
-	//Dropt::Interface Inter;
+	Dropt::Interface Inter;
 	//Dropt::Interface::LootTypeFactory<Armor> Factory(Inter);
 
-	//Inter.testfunction<Armor, Obtainabilities::Unique>();
-
-	//Factory.CreateLootTable_Weighted<Obtainabilities::Unique>("PoopTable",50, 3);
-
-	//auto tmp2 = Inter.CreateLootTable<Armor, Variance::Interval, Obtainabilities::Common>();
+	auto Test = Inter.CreateLootTable_Weighted<Armor>("PoopyTable", 50, 10);
+	std::list<Armor*> OutLoot;
+	Test->GetLoot(OutLoot);
 
 	if(false){
 		Armor ActualArmorLoot("Nested Armor");
@@ -64,10 +62,15 @@ int main()
 		Armor Gloves("Hand Armor");
 
 		
-		ElementLoot<Armor, Variance::Constant, Obtainabilities::Unique> ChestPlateLoot(&Chestplate);
-		ElementLoot<Armor, Variance::Constant, Obtainabilities::Unique> HelmetLoot(&Helmet);
-		ElementLoot<Armor, Variance::Constant, Obtainabilities::Common> LegLoot(&LegArmor);
-		ElementLoot<Armor, Variance::Constant, Obtainabilities::Unique> HandLoot(&Gloves);
+		ElementLoot<Armor, Variance::Interval, Obtainabilities::Unique> ChestPlateLoot(&Chestplate);
+		ElementLoot<Armor, Variance::Interval, Obtainabilities::Unique> HelmetLoot(&Helmet);
+		ElementLoot<Armor, Variance::Interval, Obtainabilities::Common> LegLoot(&LegArmor);
+		ElementLoot<Armor, Variance::Interval, Obtainabilities::Unique> HandLoot(&Gloves);
+
+		ChestPlateLoot.SetInterval(2);
+		HelmetLoot.SetInterval(5);
+		LegLoot.SetInterval(20);
+		HandLoot.SetInterval(8);
 
 		LootTable<Armor, Variance::Chance, Obtainabilities::Common> DropTable;
 		DropTable.AddLoot(&ChestPlateLoot);

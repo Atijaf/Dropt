@@ -14,16 +14,6 @@ namespace Dropt {
 		template<typename T>
 		class MArray {
 		public:
-			/// <summary>
-			/// Initializes array and provides a comparator function
-			/// </summary>
-			/// <param name="InitialSize">:	Starting size of array</param>
-			/// <param name="_Func_Sort">:	Comparator function for the purpose of sorting the array,
-			///								Must return a bool</param>
-			MArray(uint32_t InitialSize, std::function<bool(const T A, const T B)> _Func_Sort) :
-				Func_Sort(_Func_Sort),
-				Size(InitialSize),
-				ArrayOfElements(new T[Size]) {};
 
 			/// <summary>
 			/// Initializes array
@@ -51,6 +41,7 @@ namespace Dropt {
 			/// </summary>
 			/// <param name="Func"> Must return bool and accept two parameters of type Stored in array</param>
 			void Sort();
+			void Sort(std::function<bool(const T A, const T B)> SortFunc);
 
 			// Returns Element at Index of Array.  Unsafe
 			T& operator[](std::size_t Index) {
@@ -144,7 +135,21 @@ namespace Dropt {
 			if (NumOfElements == 0)
 				return;
 
-			std::sort(ArrayOfElements, ArrayOfElements + NumOfElements, Func_Sort);
+			auto SortFunc = [](T& A, T& B)
+			{
+				return A < B;
+			};
+
+			std::sort(ArrayOfElements, ArrayOfElements + NumOfElements, SortFunc);
+		}
+
+		template<typename T>
+		inline void Dropt::Helper::MArray<T>::Sort(std::function<bool(const T A, const T B)> SortFunc)
+		{
+			if (NumOfElements == 0)
+				return;
+
+			std::sort(ArrayOfElements, ArrayOfElements + NumOfElements, SortFunc);
 		}
 	}
 }

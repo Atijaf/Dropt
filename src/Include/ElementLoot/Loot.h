@@ -25,6 +25,8 @@ namespace Dropt {
 			ElementLoot(LootType* _Loot) : Loot(_Loot) {};
 			bool FinalizeLoot() override final { return true; }
 
+			//using CoreLoot::GetLoot;
+
 		protected:
 			bool GetLoot_Impl(std::list<LootType*>& OutLoot) override {
 				OutLoot.push_back(Loot);

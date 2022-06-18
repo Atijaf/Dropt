@@ -31,11 +31,26 @@ namespace Dropt {
 	public:	
 		
 
-		template<typename LootType, Obtainabilities Obtainability>
-		LootTable<LootType, Variance::Chance, Obtainability>* CreateLootTable_Weighted(const char* TableName, uint32_t Weight, uint32_t MaxNumObtainable)
+		template<typename LootType>
+		CoreVariantLootTable<LootType, Variance::Chance>* CreateLootTable_Weighted(const char* TableName, uint32_t Weight, uint32_t MaxNumObtainable = -1)
 		{
-			LootTypeFactory<LootType> Fact(*this);
-			return Fact.CreateLootTable_Weighted<Obtainability>(TableName, Weight, MaxNumObtainable);
+			CoreVariantLootTable<LootType, Variance::Chance>* OutTable;
+			if (MaxNumObtainable == (uint32_t)-1) {
+				OutTable = new LootTable<LootType, Variance::Chance, Obtainabilities::Common>();
+			}
+			else if (MaxNumObtainable == 1) {
+				OutTable = new LootTable<LootType, Variance::Chance, Obtainabilities::Unique>();
+			}
+			else {
+				auto TmpTable = new LootTable<LootType, Variance::Chance, Obtainabilities::Variable>();
+				TmpTable->SetMaxNumOfTimesLootCanBeObtained(MaxNumObtainable);
+				OutTable = TmpTable;
+			}
+
+			((CoreLootContainer<LootType, Variance::Chance>*)(OutTable))->SetWeight(Weight);
+
+			AddToMemoryContainer(TableName, (AbstractLootDispatcher*)(OutTable));
+			return OutTable;
 		}
 
 

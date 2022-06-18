@@ -10,21 +10,18 @@ namespace Dropt {
 		/// </summary>
 		/// <typeparam name="LootType"></typeparam>
 		template<typename LootType>
-		class CoreLootBag<LootType, Variance::Interval> : public BaseLootBag<LootType, Variance::Interval>
+		class CoreLootBagImpl<LootType, Variance::Interval> : public CoreLootBagInterface<LootType, Variance::Interval>
 		{
 		public:
-			CoreLootBag(uint32_t InitialSize) :
-				BaseLootBag([](CoreLootContainer<LootType, Variance::Interval>* A, CoreLootContainer<LootType, Variance::Interval>* B) {
-				return(*A > *B); },
-					InitialSize
-					)
-
-			{};
+			CoreLootBagImpl(uint32_t InitialSize, AbstractCoreLoot<LootType>& _Sibling) :
+				CoreLootBagInterface(InitialSize,_Sibling)
+			{
+			
+			};
 
 		protected:
 			virtual bool GrabLoot(std::list<LootType*>& OutLoot) override final;
 			virtual bool FinalizeLootBag_impl() override final;
-			virtual void RemoveIndexFromArray(const uint32_t Index) override;
 			void ResetCounter();
 
 			bool bIsSorted = false;
@@ -32,20 +29,20 @@ namespace Dropt {
 		};
 
 		template<typename LootType>
-		inline bool impl::CoreLootBag<LootType, Variance::Interval>::FinalizeLootBag_impl()
+		inline bool impl::CoreLootBagImpl<LootType, Variance::Interval>::FinalizeLootBag_impl()
 		{
-			if (GetNumOfLoot() == 0) return false;
-			if (IsLootBagFinalized()) return true;
-
 			if (!bIsSorted) {
-				LootArray.Sort();
+				LootArray.Sort([](CoreLootContainer<LootType, Variance::Interval>* A, CoreLootContainer<LootType, Variance::Interval>* B)
+					{
+						return(*A > *B);
+					});
 				bIsSorted = true;
 			}
 			return true;
 		}
 
 		template<typename LootType>
-		inline bool CoreLootBag<LootType, Variance::Interval>::GrabLoot(std::list<LootType*>& OutLoot) {
+		inline bool CoreLootBagImpl<LootType, Variance::Interval>::GrabLoot(std::list<LootType*>& OutLoot) {
 
 			uint32_t NumOfLootObtained = 0;
 			++GrabCounter;
@@ -82,14 +79,10 @@ namespace Dropt {
 			return (NumOfLootObtained > 0);
 		}
 
-		template<typename LootType>
-		inline void CoreLootBag<LootType, Variance::Interval>::RemoveIndexFromArray(const uint32_t Index) {
-			// Call Parent Function (Like super)
-			BaseLootBag::RemoveIndexFromArray(Index);
-		}
+
 
 		template<typename LootType>
-		inline void impl::CoreLootBag<LootType, Variance::Interval>::ResetCounter()
+		inline void impl::CoreLootBagImpl<LootType, Variance::Interval>::ResetCounter()
 		{
 			// Calculate the offsets for all but last indexed loot
 			for (uint32_t i = 0; i < GetNumOfLoot() - 1; ++i)

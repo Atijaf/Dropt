@@ -2,6 +2,7 @@
 #include "../ElementLoot/Loot.h"
 #include "../Helper/MArray.h"
 #include "../Helper/Globals.h"
+#include "../Core/CoreLoot.h"
 #include <random>
 
 namespace Dropt {
@@ -10,17 +11,25 @@ namespace Dropt {
 
 		// Forward Declaration
 		//template<typename LootType, Variance ContentVariant>
-		//class CoreLootBag;
+		//class CoreLootBagInterface;
 
 		class AbstractLootBag {
 		public:
 			bool IsLootBagFinalized() const { return bIsFinalized; }
+
 		protected:
 			bool FinalizeLootBag() {
+				if (GetNumOfLoot() == 0)
+					return false;
+				if (IsLootBagFinalized())
+					return true;
+
 				if (FinalizeLootBag_impl())
 					bIsFinalized = true;
 				return bIsFinalized;
 			}
+
+			virtual uint32_t GetNumOfLoot() const = 0;
 
 			// Threshhold for the LootArrayIndexOffset before we should reallocate LootArray
 			static const uint16_t ResizeArrayThreshold = 1;
@@ -28,63 +37,90 @@ namespace Dropt {
 			uint16_t LootArrayIndexOffset = 0;
 
 			bool bIsFinalized = false;
+
 		private:
-			virtual bool FinalizeLootBag_impl() = 0;
+			virtual bool FinalizeLootBag_impl() { return true; }
+		};
+
+		/// <summary>
+		/// A Core class that can be used to get loot from the Bag
+		/// </summary>
+		/// <typeparam name="LootType"> Type of Loot being stored in the Bag</typeparam>
+		template<typename LootType>
+		class CoreLootBag : public AbstractLootBag
+		{
+		public:
+			// Updates OutLoot and returns true if Loot is Obtained
+			bool GetLoot(std::list<LootType*>& OutLoot) { return Sibling.GetLoot(OutLoot); }
+		protected:
+			CoreLootBag(AbstractCoreLoot<LootType>& _Sibling) :
+				Sibling(_Sibling) {};
+
+			virtual bool GrabLoot(std::list<LootType*>& OutLoot) = 0;
+			virtual void RemoveIndexFromArray(const uint32_t Index) = 0;
+			virtual void TrimArray() = 0;
+
+			std::uniform_int_distribution<uint64_t> BagIntDistrib;
+		private:
+			AbstractCoreLoot<LootType>& Sibling;
 		};
 
 
 		/// <summary>
-		/// Very Base of a Loot Bag.  Provides implementation for adding loot, and forces GrabLoot to be defined in any children of this class
+		/// A sort of Interface class that allows adding loot, 
+		/// and provides pure virtual functions for derived classes to define
 		/// </summary>
 		/// <typeparam name="LootType"></typeparam>
 		template<typename LootType, Variance ContentVariant>
-		class BaseLootBag : public AbstractLootBag
+		class CoreLootBagInterface : public CoreLootBag<LootType>
 		{
 		public:
-			template<Obtainabilities Obtainability>
 			// Catch all add loot function
+			template<Obtainabilities Obtainability>
 			bool AddLoot(CoreLoot<LootType, ContentVariant, Obtainability>* Loot);
-			uint32_t GetNumOfLoot() const { return LootArray.GetNumOfElements() - LootArrayIndexOffset; }
+			uint32_t GetNumOfLoot() const override { return LootArray.GetNumOfElements() - LootArrayIndexOffset; }
 
+			
 		protected:
 			/// <summary>
 			/// Initializes a LootBag
 			/// </summary>
 			/// <param name="FuncSort">:	Sorting Function that returns bools and accepts two CoreLootContainer Pointers</param>
 			/// <param name="InitialSize">:	Starting size of the array (Default 10)</param>
-			BaseLootBag(std::function<bool(CoreLootContainer<LootType, ContentVariant>* A,
-				CoreLootContainer<LootType, ContentVariant>* B)> FuncSort,
-				uint32_t InitialSize = 10) :
-				LootArray(InitialSize, FuncSort) {}
+			CoreLootBagInterface<LootType, ContentVariant>(	uint32_t					InitialSize,
+															AbstractCoreLoot<LootType>& _Sibling):
+				
+				// Initializers		
+				CoreLootBag(_Sibling),
+				LootArray(InitialSize) 
+			{
+			};
 
-			virtual ~BaseLootBag();
+			virtual ~CoreLootBagInterface() {};
 
-			virtual bool GrabLoot(std::list<LootType*>& OutLoot) { return false; }
-			virtual void RemoveIndexFromArray(const uint32_t Index);
-			virtual void TrimArray();
+			virtual void RemoveIndexFromArray(const uint32_t Index) override;
+			virtual void TrimArray() override;
 
-			std::uniform_int_distribution<uint64_t> BagIntDistrib;
+			
 			Dropt::Helper::MArray<CoreLootContainer<LootType, ContentVariant>*> LootArray;
 		};
 
+
 		template<typename LootType, Variance ContentVariant>
-		class CoreLootBag : public BaseLootBag<LootType, ContentVariant>
-		{
+		class CoreLootBagImpl : public CoreLootBagInterface<LootType, ContentVariant> {
 		protected:
-			CoreLootBag(uint32_t InitialSize) : BaseLootBag(InitialSize) {}
-			bool GrabLoot(std::list<LootType*>& OutLoot) override { return false; }
+			CoreLootBagImpl<LootType, ContentVariant>(	uint32_t					InitialSize,
+														AbstractCoreLoot<LootType>& _Sibling):
+				CoreLootBagInterface(InitialSize, _Sibling) 
+			{
+
+			};
 		};
-
-
-		template<typename LootType, Variance ContentVariant>
-		inline impl::BaseLootBag<LootType, ContentVariant>::~BaseLootBag()
-		{
-		}
-
+		
 
 		template<typename LootType, Variance ContentVariant>
 		template<Obtainabilities Obtainability>
-		inline bool BaseLootBag<LootType, ContentVariant>::AddLoot(CoreLoot<LootType, ContentVariant, Obtainability>* Loot)
+		inline bool CoreLootBagInterface<LootType, ContentVariant>::AddLoot(CoreLoot<LootType, ContentVariant, Obtainability>* Loot)
 		{
 			// Any Loot being added to a Loot Bag must be finalized..  i.e. Confirmed to be able to return loot
 			// This solves circular nested Loot.
@@ -97,7 +133,7 @@ namespace Dropt {
 		}
 
 		template<typename LootType, Variance ContentVariant>
-		inline void BaseLootBag<LootType, ContentVariant>::RemoveIndexFromArray(const uint32_t Index)
+		inline void CoreLootBagInterface<LootType, ContentVariant>::RemoveIndexFromArray(const uint32_t Index)
 		{
 			// Remove loot by shifting all elements from the right to Index
 			// i.e. Move Element at Index to the last index
@@ -123,12 +159,14 @@ namespace Dropt {
 		}
 
 		template<typename LootType, Variance ContentVariant>
-		inline void impl::BaseLootBag<LootType, ContentVariant>::TrimArray()
+		inline void impl::CoreLootBagInterface<LootType, ContentVariant>::TrimArray()
 		{
 			bIsFinalized = false;
 			LootArray.Resize(GetNumOfLoot());
 			LootArrayIndexOffset = 0;
 			FinalizeLootBag();
 		}
+		
 	}
+	
 }
