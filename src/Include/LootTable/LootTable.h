@@ -5,11 +5,11 @@ namespace Dropt {
 	namespace impl
 	{
 		template<typename LootType, Variance Variant, Obtainabilities Obtainability>
-		class LootTable : public CoreVariantLootTable<LootType, Variant>, public CoreLoot<LootType, Variant, Obtainability>
+		class LootTable : public CoreLootTable<LootType, Variant>, public CoreLoot<LootType, Variant, Obtainability>
 		{
 		public:
-			LootTable() :
-				CoreVariantLootTable<LootType,Variant>(*this)
+			LootTable():
+				CoreLootTable(this)
 			{
 
 			}

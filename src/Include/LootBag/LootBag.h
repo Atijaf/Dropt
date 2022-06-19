@@ -13,17 +13,17 @@ namespace Dropt {
 		/// <param name="Obtainability">:	Defines if this bag is Unique, Variable, or Common</param>
 		/// <param name="ContentVariant">:	Defines if the contents of this bag are obtained by Chance, Interval, or Constantly</param>
 		template<	typename		LootType,
-					Variance		Variant,
+					Variance		BagVariant,
 					Obtainabilities Obtainability,
 					Variance		ContentVariant>
-		class LootBag : public CoreLootBagImpl<LootType, ContentVariant>, public CoreLoot<LootType, Variant, Obtainability>
+		class LootBag : public CoreLootBagImpl<LootType, BagVariant, ContentVariant>, public CoreLoot<LootType, BagVariant, Obtainability>
 		{
 		public:
 
-			using CoreLootBag::GetLoot;
+			using BaseLootBag::GetLoot;
 
 			LootBag(uint32_t InitialSize = 10) :
-				CoreLootBagImpl(InitialSize,(*this)) {};
+				CoreLootBagImpl(InitialSize,(this)) {};
 			// Performs final actions on a Loot Table to prepare it for grabs
 			bool FinalizeLoot() override {
 				return FinalizeLootBag();

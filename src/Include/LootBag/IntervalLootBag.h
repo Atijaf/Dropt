@@ -9,11 +9,11 @@ namespace Dropt {
 		/// Specialized class for Interval Loot Bag
 		/// </summary>
 		/// <typeparam name="LootType"></typeparam>
-		template<typename LootType>
-		class CoreLootBagImpl<LootType, Variance::Interval> : public CoreLootBagInterface<LootType, Variance::Interval>
+		template<typename LootType, Variance BagVariant>
+		class CoreLootBagImpl<LootType, BagVariant, Variance::Interval> : public CoreLootBagInterface<LootType, BagVariant, Variance::Interval>
 		{
 		public:
-			CoreLootBagImpl(uint32_t InitialSize, AbstractCoreLoot<LootType>& _Sibling) :
+			CoreLootBagImpl(uint32_t InitialSize, AbstractLootDispatcher* _Sibling) :
 				CoreLootBagInterface(InitialSize,_Sibling)
 			{
 			
@@ -28,8 +28,8 @@ namespace Dropt {
 			uint32_t GrabCounter = 0;
 		};
 
-		template<typename LootType>
-		inline bool impl::CoreLootBagImpl<LootType, Variance::Interval>::FinalizeLootBag_impl()
+		template<typename LootType, Variance BagVariant>
+		inline bool impl::CoreLootBagImpl<LootType, BagVariant, Variance::Interval>::FinalizeLootBag_impl()
 		{
 			if (!bIsSorted) {
 				LootArray.Sort([](CoreLootContainer<LootType, Variance::Interval>* A, CoreLootContainer<LootType, Variance::Interval>* B)
@@ -41,8 +41,8 @@ namespace Dropt {
 			return true;
 		}
 
-		template<typename LootType>
-		inline bool CoreLootBagImpl<LootType, Variance::Interval>::GrabLoot(std::list<LootType*>& OutLoot) {
+		template<typename LootType, Variance BagVariant>
+		inline bool CoreLootBagImpl<LootType, BagVariant, Variance::Interval>::GrabLoot(std::list<LootType*>& OutLoot) {
 
 			uint32_t NumOfLootObtained = 0;
 			++GrabCounter;
@@ -81,8 +81,8 @@ namespace Dropt {
 
 
 
-		template<typename LootType>
-		inline void impl::CoreLootBagImpl<LootType, Variance::Interval>::ResetCounter()
+		template<typename LootType, Variance BagVariant>
+		inline void impl::CoreLootBagImpl<LootType, BagVariant, Variance::Interval>::ResetCounter()
 		{
 			// Calculate the offsets for all but last indexed loot
 			for (uint32_t i = 0; i < GetNumOfLoot() - 1; ++i)

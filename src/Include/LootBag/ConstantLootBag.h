@@ -8,11 +8,11 @@ namespace Dropt {
 		/// Specialized class for Constant Loot Bag
 		/// </summary>
 		/// <typeparam name="LootType"></typeparam>
-		template<typename LootType>
-		class CoreLootBagImpl<LootType, Variance::Constant> : public CoreLootBagInterface<LootType, Variance::Constant>
+		template<typename LootType, Variance BagVariant>
+		class CoreLootBagImpl<LootType, BagVariant, Variance::Constant> : public CoreLootBagInterface<LootType, BagVariant, Variance::Constant>
 		{
 		public:
-			CoreLootBagImpl(uint32_t InitialSize, AbstractCoreLoot<LootType>& _Sibling) :
+			CoreLootBagImpl(uint32_t InitialSize, AbstractLootDispatcher* _Sibling) :
 				CoreLootBagInterface(InitialSize,_Sibling)
 			{
 
@@ -27,8 +27,8 @@ namespace Dropt {
 
 
 
-		template<typename LootType>
-		inline bool CoreLootBagImpl<LootType, Variance::Constant>::GrabLoot(std::list<LootType*>& OutLoot) {
+		template<typename LootType, Variance BagVariant>
+		inline bool CoreLootBagImpl<LootType, BagVariant, Variance::Constant>::GrabLoot(std::list<LootType*>& OutLoot) {
 
 			bool bReturnFlag = true;
 			if (this->GetNumOfLoot() > 0) {
@@ -47,8 +47,8 @@ namespace Dropt {
 			return false;
 		}
 
-		template<typename LootType>
-		inline uint32_t* impl::CoreLootBagImpl<LootType, Variance::Constant>::GetRangesToRemove(uint32_t& OutSize)
+		template<typename LootType, Variance BagVariant>
+		inline uint32_t* impl::CoreLootBagImpl<LootType, BagVariant, Variance::Constant>::GetRangesToRemove(uint32_t& OutSize)
 		{
 			OutSize = 0;
 
@@ -101,8 +101,8 @@ namespace Dropt {
 			return nullptr;
 		}
 
-		template<typename LootType>
-		inline void impl::CoreLootBagImpl<LootType, Variance::Constant>::EliminateRemovableIndexes()
+		template<typename LootType, Variance BagVariant>
+		inline void impl::CoreLootBagImpl<LootType, BagVariant, Variance::Constant>::EliminateRemovableIndexes()
 		{
 			// Loop through entire array to get all the indexes that should be removed
 			uint32_t ArraySize = 0;
@@ -120,8 +120,8 @@ namespace Dropt {
 			}
 		}
 
-		template<typename LootType>
-		inline void impl::CoreLootBagImpl<LootType, Variance::Constant>::RemoveRangeOfElements(const uint32_t Min, const uint32_t Max)
+		template<typename LootType, Variance BagVariant>
+		inline void impl::CoreLootBagImpl<LootType, BagVariant, Variance::Constant>::RemoveRangeOfElements(const uint32_t Min, const uint32_t Max)
 		{
 			// Remove loot by shifiting all elements from right to Index;
 			uint32_t ShiftIndex = Min;

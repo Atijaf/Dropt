@@ -30,6 +30,8 @@ int main()
 	//Dropt::Interface::LootTypeFactory<Armor> Factory(Inter);
 
 	auto Test = Inter.CreateLootTable_Weighted<Armor>("PoopyTable", 50, 10);
+	auto ObtainType = Test->GetSibling()->GetObtainability();
+
 	std::list<Armor*> OutLoot;
 	Test->GetLoot(OutLoot);
 

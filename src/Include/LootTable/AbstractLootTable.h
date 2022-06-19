@@ -2,7 +2,11 @@
 #include "../LootBag/LootBag.h"
 #include <list>
 
+
 namespace Dropt {
+	
+	class Interface;
+
 	namespace impl
 	{
 
@@ -11,8 +15,17 @@ namespace Dropt {
 		public:
 			bool IsLootTableFinalized() const { return bLootTableFinalized; }
 			virtual bool FinalizeLootTable() = 0;
+			AbstractLootDispatcher* GetSibling() { return Sibling; }
+
 		protected:
+			AbstractLootTable(AbstractLootDispatcher* _Sibling) :
+				Sibling(_Sibling)
+			{
+
+			}
+
 			bool bLootTableFinalized = false;
+			AbstractLootDispatcher* Sibling;
 		};
 
 		/// <summary>
@@ -20,7 +33,7 @@ namespace Dropt {
 		/// </summary>
 		/// <typeparam name="Variant"> How the Loot Table is obtained (If stored within another Loot Table or Loot Bag)</typeparam>
 		template<typename LootType>
-		class CoreLootTable : public AbstractLootTable
+		class BaseLootTable : public AbstractLootTable
 		{
 		public:
 
@@ -32,6 +45,7 @@ namespace Dropt {
 				if (CanAddLoot(Loot))
 					WeightedLootBag.AddLoot(Loot);
 			}
+
 
 			template<Obtainabilities Obtainability>
 			void AddLoot(CoreLoot<LootType, Variance::Constant, Obtainability>* Loot) {
@@ -54,12 +68,16 @@ namespace Dropt {
 
 			// Updates OutLoot and returns true if loot is obtained
 			bool GetLoot(std::list<LootType*>& OutLoot) {
-				return Sibling.GetLoot(OutLoot);
+				return GetSibling()->GetLoot(OutLoot);
+			}
+
+			AbstractCoreLoot<LootType>* GetSibling() { 
+				return static_cast<AbstractCoreLoot<LootType>*>(Sibling); 
 			}
 
 		protected:
-			CoreLootTable(AbstractCoreLoot<LootType>& _Sibling) :
-				Sibling(_Sibling)
+			BaseLootTable(AbstractLootDispatcher* _Sibling) :
+				AbstractLootTable(_Sibling)
 			{
 
 			}
@@ -84,15 +102,20 @@ namespace Dropt {
 			}
 
 			template<Variance Variant>
-			bool CanAddLoot(CoreLootContainer<LootType, Variant>* Loot) const { return !this->IsLootTableFinalized(); }
+			bool CanAddLoot(CoreLootContainer<LootType, Variant>* Loot) const 
+			{ 
+				return !this->IsLootTableFinalized(); 
+			}
+			
 			template<> bool CanAddLoot<Variance::Chance>(CoreLootContainer<LootType, Variance::Chance>* Loot) const {
 				return(!this->IsLootTableFinalized() &&	// If this table is finalized, nothing else can be added 
-					Loot->GetWeight() != 0);			// Elements with 0 weight cannot be added
+						Loot->GetWeight() != 0);		// Elements with 0 weight cannot be added
 			}
 			template<> bool CanAddLoot<Variance::Interval>(CoreLootContainer<LootType, Variance::Interval>* Loot) const {
 				return(!this->IsLootTableFinalized() &&	// If this table is finalized, nothing else can be added 
-					Loot->GetInterval() != 0);			// Elements with 0 Interval cannot be added
+						Loot->GetInterval() != 0);		// Elements with 0 Interval cannot be added
 			}
+
 
 
 			// LootBag with Weighted Drops
@@ -103,19 +126,21 @@ namespace Dropt {
 			LootBag<LootType, Variance::Constant, Obtainabilities::Common, Variance::Constant> ConstantLootBag;
 
 
-		private:
-			AbstractCoreLoot<LootType>& Sibling;
 		};
 
 		template<typename LootType, Variance Variant>
-		class CoreVariantLootTable : public CoreLootTable<LootType>
+		class CoreLootTable : public BaseLootTable<LootType>
 		{
+		public:
+			CoreLootContainer<LootType, Variant>* GetSibling() { 
+				return static_cast<CoreLootContainer<LootType,Variant>*>(Sibling); }
 		protected:
-			CoreVariantLootTable(AbstractCoreLoot<LootType>& _Sibling) :
-				CoreLootTable(_Sibling)
+			CoreLootTable(AbstractLootDispatcher* _Sibling) :
+				BaseLootTable(_Sibling) 
 			{
-				std::cout << "Here";
+
 			}
+
 
 		};
 	}

@@ -21,7 +21,7 @@ namespace Dropt {
 		class CoreLootContainer : public AbstractCoreLoot<LootType>, public LootDispatchVariance<Variant>
 		{
 		public:
-
+			virtual Obtainabilities GetObtainability() const = 0;
 		protected:
 		};
 
@@ -41,6 +41,7 @@ namespace Dropt {
 				Observe_GetLoot();
 				return GetLoot_Impl(OutLoot);
 			}
+			Obtainabilities GetObtainability() const override { return Obtainability; }
 
 		private:
 

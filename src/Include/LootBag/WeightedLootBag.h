@@ -9,11 +9,11 @@ namespace Dropt {
 		/// Specialized class for Weighted Loot Bag
 		/// </summary>
 		/// <typeparam name="LootType"></typeparam>
-		template<typename LootType>
-		class CoreLootBagImpl<LootType, Variance::Chance> : public CoreLootBagInterface<LootType, Variance::Chance>
+		template<typename LootType, Variance BagVariant>
+		class CoreLootBagImpl<LootType, BagVariant, Variance::Chance> : public CoreLootBagInterface<LootType, BagVariant, Variance::Chance>
 		{
 		public:
-			CoreLootBagImpl(uint32_t InitialSize, AbstractCoreLoot<LootType>& _Sibling) :	// Initialization list
+			CoreLootBagImpl(uint32_t InitialSize, AbstractLootDispatcher* _Sibling) :	// Initialization list
 				CoreLootBagInterface(InitialSize, _Sibling)
 			{}
 
@@ -43,8 +43,8 @@ namespace Dropt {
 		};
 
 
-		template<typename LootType>
-		inline bool impl::CoreLootBagImpl<LootType, Variance::Chance>::FinalizeLootBag_impl()
+		template<typename LootType, Variance BagVariant>
+		inline bool impl::CoreLootBagImpl<LootType, BagVariant, Variance::Chance>::FinalizeLootBag_impl()
 		{
 			// Find GCF of all weights in LootArray and reduce the weights based off that;
 			ReduceToGCF();
@@ -68,8 +68,8 @@ namespace Dropt {
 			return true;
 		}
 
-		template<typename LootType>
-		inline void impl::CoreLootBagImpl<LootType, Variance::Chance>::ReduceToGCF()
+		template<typename LootType, Variance BagVariant>
+		inline void impl::CoreLootBagImpl<LootType, BagVariant, Variance::Chance>::ReduceToGCF()
 		{
 			const uint32_t GCF = FindGCFOfWeights();
 			if (GCF > 1)
@@ -77,8 +77,8 @@ namespace Dropt {
 					LootArray[i]->SetWeight(LootArray[i]->GetWeight() / GCF);
 		}
 
-		template<typename LootType>
-		inline void CoreLootBagImpl<LootType, Variance::Chance>::RemoveIndexFromArray(const uint32_t Index)
+		template<typename LootType, Variance BagVariant>
+		inline void CoreLootBagImpl<LootType, BagVariant, Variance::Chance>::RemoveIndexFromArray(const uint32_t Index)
 		{
 			// Call Parent Function (Like super)
 			CoreLootBagInterface::RemoveIndexFromArray(Index);
@@ -91,8 +91,8 @@ namespace Dropt {
 			DefineDice();
 		}
 
-		template<typename LootType>
-		inline uint32_t CoreLootBagImpl<LootType, Variance::Chance>::FindGCFOfWeights() const
+		template<typename LootType, Variance BagVariant>
+		inline uint32_t CoreLootBagImpl<LootType, BagVariant, Variance::Chance>::FindGCFOfWeights() const
 		{
 
 			if (LootArray.GetNumOfElements() == 0)
@@ -118,8 +118,8 @@ namespace Dropt {
 			return Result;
 		}
 
-		template<typename LootType>
-		inline void impl::CoreLootBagImpl<LootType, Variance::Chance>::DefineRelativeWeights()
+		template<typename LootType, Variance BagVariant>
+		inline void impl::CoreLootBagImpl<LootType, BagVariant, Variance::Chance>::DefineRelativeWeights()
 		{
 			uint32_t Index = GetNumOfLoot() - 1;
 			uint64_t WeightSum = 0;
@@ -130,14 +130,14 @@ namespace Dropt {
 
 		}
 
-		template<typename LootType>
-		inline void CoreLootBagImpl<LootType, Variance::Chance>::DefineDice()
+		template<typename LootType, Variance BagVariant>
+		inline void CoreLootBagImpl<LootType, BagVariant, Variance::Chance>::DefineDice()
 		{
 			BagIntDistrib = std::uniform_int_distribution<uint64_t>(0, LootArray[0]->GetRelativeWeight() - 1);
 		}
 
-		template<typename LootType>
-		inline bool CoreLootBagImpl<LootType, Variance::Chance>::GrabLoot(std::list<LootType*>& OutLoot) {
+		template<typename LootType, Variance BagVariant>
+		inline bool CoreLootBagImpl<LootType, BagVariant, Variance::Chance>::GrabLoot(std::list<LootType*>& OutLoot) {
 			bool bReturnFlag = true;
 			CoreLootContainer<LootType, Variance::Chance>* Loot = nullptr;
 			uint32_t LootIndex = 0;
@@ -157,8 +157,8 @@ namespace Dropt {
 			return bReturnFlag;
 		}
 
-		template<typename LootType>
-		inline CoreLootContainer<LootType, Variance::Chance>* impl::CoreLootBagImpl<LootType, Variance::Chance>::
+		template<typename LootType, Variance BagVariant>
+		inline CoreLootContainer<LootType, Variance::Chance>* impl::CoreLootBagImpl<LootType, BagVariant, Variance::Chance>::
 			FindLootFromRandomNumber(uint64_t RandomNumber, uint32_t& OutLootIndex)
 		{
 			//Indexes:	 0,  1,  2, 3, 4
