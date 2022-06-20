@@ -20,27 +20,27 @@ namespace Dropt {
 		{
 		public:
 
-			using BaseLootBag::GetLoot;
+			using CoreLoot<LootType, BagVariant, Obtainability>::GetLoot;
 
 			LootBag(uint32_t InitialSize = 10) :
-				CoreLootBagImpl(InitialSize,(this)) {};
+				CoreLootBagImpl<LootType,BagVariant, ContentVariant>(InitialSize,(this)) {};
 			// Performs final actions on a Loot Table to prepare it for grabs
 			bool FinalizeLoot() override {
-				return FinalizeLootBag();
+				return this->FinalizeLootBag();
 			}
 
-			bool IsFinalized() const override { return IsLootBagFinalized(); }
+			bool IsFinalized() const override { return this->IsLootBagFinalized(); }
 		protected:
 			// Implementation of GetLoot for LootBag, defined in AbstractLootBag
 			bool GetLoot_Impl(std::list<LootType*>& OutLoot) override {
-				return GrabLoot(OutLoot);
+				return this->GrabLoot(OutLoot);
 			}
 
 		private:
 			// Returns true if the Loot Bag has no contents OR if it was set to be removed after x amount of grabs (Unique/variable LootBag)
 			// This means that it will be removed from it's owner's container
 			bool ShouldRemoveFromContainer() const override {
-				return (LootObtainabilityController::ShouldRemoveFromContainer() ||
+				return (LootObtainabilityController<Obtainability>::ShouldRemoveFromContainer() ||
 					this->GetNumOfLoot() == 0);
 			}
 

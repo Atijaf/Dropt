@@ -9,11 +9,11 @@ namespace Dropt {
 		/// </summary>
 		/// <typeparam name="LootType"></typeparam>
 		template<typename LootType, Variance BagVariant>
-		class CoreLootBagImpl<LootType, BagVariant, Variance::Constant> : public CoreLootBagInterface<LootType, BagVariant, Variance::Constant>
+		class CoreLootBagImpl<LootType, BagVariant, Variance::Constant> : public CoreLootBag<LootType, BagVariant, Variance::Constant>
 		{
 		public:
 			CoreLootBagImpl(uint32_t InitialSize, AbstractLootDispatcher* _Sibling) :
-				CoreLootBagInterface(InitialSize,_Sibling)
+				CoreLootBag<LootType, BagVariant,Variance::Constant>(InitialSize,_Sibling)
 			{
 
 			};
@@ -34,7 +34,7 @@ namespace Dropt {
 			if (this->GetNumOfLoot() > 0) {
 				CoreLootContainer<LootType, Variance::Constant>* Loot = nullptr;
 				for (uint32_t i = 0; i < this->GetNumOfLoot(); ++i) {
-					Loot = LootArray[i];
+					Loot = this->LootArray[i];
 					// Debug.  This shouldn't ever happen, but if it does, investigate
 					// Might happen if this function is called on a loot bag that has no contents
 					if (!Loot->GetLoot(OutLoot))
@@ -55,7 +55,7 @@ namespace Dropt {
 			// Get list of indexes to remove
 			std::list<uint32_t> ListIndexesToRemove;
 			for (uint32_t i = 0; i < this->GetNumOfLoot(); ++i)
-				if (AbstractLootDispatcher::ShouldRemoveFromContainer(LootArray[i]))
+				if (AbstractLootDispatcher::ShouldRemoveFromContainer(this->LootArray[i]))
 					ListIndexesToRemove.push_back(i);
 			uint32_t ArraySize = ListIndexesToRemove.size();
 
@@ -115,8 +115,7 @@ namespace Dropt {
 					RemoveRangeOfElements(MinRange, MaxRange);
 				}
 				delete[] RemovingIndexes;
-
-				TrimArray();
+				this->TrimArray();
 			}
 		}
 
@@ -126,15 +125,15 @@ namespace Dropt {
 			// Remove loot by shifiting all elements from right to Index;
 			uint32_t ShiftIndex = Min;
 			uint32_t i = Max + 1;
-			while (i < GetNumOfLoot()) {
-				LootArray[ShiftIndex++] = LootArray[i++];
+			while (i < this->GetNumOfLoot()) {
+				this->LootArray[ShiftIndex++] = this->LootArray[i++];
 			}
-			const uint32_t PrevNumOfLoot = GetNumOfLoot();
-			LootArrayIndexOffset += (Max - Min + 1);
+			const uint32_t PrevNumOfLoot = this->GetNumOfLoot();
+			this->LootArrayIndexOffset += (Max - Min + 1);
 
 			// Nullify end of LootArray
-			for (uint32_t i = GetNumOfLoot(); i < PrevNumOfLoot; ++i)
-				LootArray[i] = nullptr;
+			for (uint32_t i = this->GetNumOfLoot(); i < PrevNumOfLoot; ++i)
+				this->LootArray[i] = nullptr;
 		}
 
 

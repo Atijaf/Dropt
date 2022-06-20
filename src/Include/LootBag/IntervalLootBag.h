@@ -10,11 +10,11 @@ namespace Dropt {
 		/// </summary>
 		/// <typeparam name="LootType"></typeparam>
 		template<typename LootType, Variance BagVariant>
-		class CoreLootBagImpl<LootType, BagVariant, Variance::Interval> : public CoreLootBagInterface<LootType, BagVariant, Variance::Interval>
+		class CoreLootBagImpl<LootType, BagVariant, Variance::Interval> : public CoreLootBag<LootType, BagVariant, Variance::Interval>
 		{
 		public:
 			CoreLootBagImpl(uint32_t InitialSize, AbstractLootDispatcher* _Sibling) :
-				CoreLootBagInterface(InitialSize,_Sibling)
+				CoreLootBag<LootType, BagVariant,Variance::Interval>(InitialSize,_Sibling)
 			{
 			
 			};
@@ -32,7 +32,7 @@ namespace Dropt {
 		inline bool impl::CoreLootBagImpl<LootType, BagVariant, Variance::Interval>::FinalizeLootBag_impl()
 		{
 			if (!bIsSorted) {
-				LootArray.Sort([](CoreLootContainer<LootType, Variance::Interval>* A, CoreLootContainer<LootType, Variance::Interval>* B)
+				this->LootArray.Sort([](CoreLootContainer<LootType, Variance::Interval>* A, CoreLootContainer<LootType, Variance::Interval>* B)
 					{
 						return(*A > *B);
 					});
@@ -47,33 +47,33 @@ namespace Dropt {
 			uint32_t NumOfLootObtained = 0;
 			++GrabCounter;
 			uint32_t i = 0;
-			while (i < GetNumOfLoot()) {
+			while (i < this->GetNumOfLoot()) {
 
 				// In order for GrabCounter to evenly go into Interval, GrabCounter MUST be
 				// at least equal to or larger than the Interval
-				if (GrabCounter + LootArray[i]->GetOffset() < LootArray[i]->GetInterval())
+				if (GrabCounter + this->LootArray[i]->GetOffset() < this->LootArray[i]->GetInterval())
 					break;
 
 				// If GrabCounter does not evently go into the Loot's Interval,
 				// at Index I in LootArray, then increment i and loop
-				if ((GrabCounter + LootArray[i]->GetOffset()) % LootArray[i]->GetInterval() != 0)
+				if ((GrabCounter + this->LootArray[i]->GetOffset()) % this->LootArray[i]->GetInterval() != 0)
 					++i;
 
 				// Else, GrabCounter evenly goes into the Loot's Interval, 
 				// at Index I in LootArray, get that loot
 				else {
-					LootArray[i]->GetLoot(OutLoot);
+					this->LootArray[i]->GetLoot(OutLoot);
 					// If we remove the index from the array, then we don't need to increment i
-					if (AbstractLootDispatcher::ShouldRemoveFromContainer(LootArray[i]))
-						RemoveIndexFromArray(i);
+					if (AbstractLootDispatcher::ShouldRemoveFromContainer(this->LootArray[i]))
+						this->RemoveIndexFromArray(i);
 					// Increment I IF we did not remove it from the array
 					else ++i;
 				}
 			}
 
 			// Lastly, if we obtained the last loot in the array, we should reset the counter
-			if (i == GetNumOfLoot() && GetNumOfLoot() > 0 &&
-				GrabCounter % LootArray[GetNumOfLoot() - 1]->GetInterval() == 0)
+			if (i == this->GetNumOfLoot() && this->GetNumOfLoot() > 0 &&
+				GrabCounter % this->LootArray[this->GetNumOfLoot() - 1]->GetInterval() == 0)
 				ResetCounter();
 
 			return (NumOfLootObtained > 0);
@@ -85,8 +85,8 @@ namespace Dropt {
 		inline void impl::CoreLootBagImpl<LootType, BagVariant, Variance::Interval>::ResetCounter()
 		{
 			// Calculate the offsets for all but last indexed loot
-			for (uint32_t i = 0; i < GetNumOfLoot() - 1; ++i)
-				LootArray[i]->CalculateOffset(GrabCounter);
+			for (uint32_t i = 0; i < this->GetNumOfLoot() - 1; ++i)
+				this->LootArray[i]->CalculateOffset(GrabCounter);
 
 			// Reset counter
 			GrabCounter = 0;

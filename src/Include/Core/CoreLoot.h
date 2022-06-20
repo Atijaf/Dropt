@@ -21,7 +21,7 @@ namespace Dropt {
 		class CoreLootContainer : public AbstractCoreLoot<LootType>, public LootDispatchVariance<Variant>
 		{
 		public:
-			virtual Obtainabilities GetObtainability() const = 0;
+			constexpr Variance GetVariant() const override { return Variant; }
 		protected:
 		};
 
@@ -38,16 +38,16 @@ namespace Dropt {
 		{
 		public:
 			bool GetLoot(std::list<LootType*>& OutLoot) override final {
-				Observe_GetLoot();
+				this->Observe_GetLoot();
 				return GetLoot_Impl(OutLoot);
 			}
-			Obtainabilities GetObtainability() const override { return Obtainability; }
+			constexpr Obtainabilities GetObtainability() const override { return Obtainability; }
 
 		private:
 
 			virtual bool GetLoot_Impl(std::list<LootType*>& OutLoot) = 0;
 			bool ShouldRemoveFromContainer() const override {
-				return LootObtainabilityController::ShouldRemoveFromContainer();
+				return LootObtainabilityController<Obtainability>::ShouldRemoveFromContainer();
 			}
 		};
 	}

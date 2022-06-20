@@ -16,14 +16,17 @@ namespace Dropt {
 
 		class AbstractLootDispatchVariance
 		{
+		protected:
+			AbstractLootDispatchVariance() {};
 		};
 
 		template<Variance Variant>
 		class LootDispatchVariance : public AbstractLootDispatchVariance
 		{
-		public:
+		protected:
 			LootDispatchVariance() {};
 
+		public:
 			bool operator <(const LootDispatchVariance<Variant>& Other) const {
 				return false;
 			}
@@ -35,8 +38,9 @@ namespace Dropt {
 		template<>
 		class LootDispatchVariance<Variance::Chance> : public AbstractLootDispatchVariance
 		{
-		public:
+		protected:
 			LootDispatchVariance() {};
+		public:
 
 			uint64_t GetRelativeWeight() const { return RelativeWeight; }
 			uint32_t GetWeight() const { return Weight; }
@@ -58,6 +62,8 @@ namespace Dropt {
 		template<>
 		class LootDispatchVariance<Variance::Interval> : public AbstractLootDispatchVariance
 		{
+		protected:
+			LootDispatchVariance() {};
 		public:
 
 			uint32_t GetInterval() const { return Interval; }

@@ -7,6 +7,8 @@ namespace Dropt {
 	{
 		class AbstractLootObtainabilityController
 		{
+		protected:
+			AbstractLootObtainabilityController() {};
 		public:
 			virtual bool ShouldRemoveFromContainer() const = 0;
 		protected:
@@ -16,11 +18,15 @@ namespace Dropt {
 		template<Obtainabilities Obtainability>
 		class LootObtainabilityController : public AbstractLootObtainabilityController
 		{
+		protected:
+			LootObtainabilityController() {};
 		};
 
 		template<>
 		class LootObtainabilityController<Obtainabilities::Common> : public AbstractLootObtainabilityController
 		{
+		protected:
+			LootObtainabilityController() {};
 		public:
 			bool ShouldRemoveFromContainer() const override { return false; }
 
@@ -29,6 +35,8 @@ namespace Dropt {
 		template<>
 		class LootObtainabilityController<Obtainabilities::Variable> : public AbstractLootObtainabilityController
 		{
+		protected:
+			LootObtainabilityController() {};
 		public:
 			bool ShouldRemoveFromContainer() const override
 			{
@@ -48,6 +56,8 @@ namespace Dropt {
 		template<>
 		class LootObtainabilityController<Obtainabilities::Unique> : public AbstractLootObtainabilityController
 		{
+		protected:
+			LootObtainabilityController() {};
 		public:
 			bool ShouldRemoveFromContainer() const override { return bHasLootBeenObtainedOnce; }
 			void Observe_GetLoot() override {

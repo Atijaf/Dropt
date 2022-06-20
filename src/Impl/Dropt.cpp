@@ -29,8 +29,12 @@ int main()
 	Dropt::Interface Inter;
 	//Dropt::Interface::LootTypeFactory<Armor> Factory(Inter);
 
-	auto Test = Inter.CreateLootTable_Weighted<Armor>("PoopyTable", 50, 10);
-	auto ObtainType = Test->GetSibling()->GetObtainability();
+	auto Test = Inter.CreateLootTable_Weighted<Armor>("PoopyTable", 50);
+	auto TestBag = Inter.CreateBag_Weighted<Armor, Variance::Chance>("PoopyBag", 50);
+	const Variance SibVar = TestBag->GetSibling()->GetVariant();
+	const Obtainabilities Obtainability = TestBag->GetSibling()->GetObtainability();
+
+	Test->AddLoot(TestBag);
 
 	std::list<Armor*> OutLoot;
 	Test->GetLoot(OutLoot);

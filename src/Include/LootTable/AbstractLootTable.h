@@ -37,32 +37,37 @@ namespace Dropt {
 		{
 		public:
 
-			template<Variance Variant, Obtainabilities Obtainability>
-			void AddLoot(CoreLoot<LootType, Variant, Obtainability>* Loot) {}
+			template<Variance Variant>
+			void AddLoot(BaseLootBag<LootType, Variant>* Loot) {
+				AddLoot(Loot->GetSibling());
+			}
 
-			template<Obtainabilities Obtainability>
-			void AddLoot(CoreLoot<LootType, Variance::Chance, Obtainability>* Loot) {
+			template<Variance Variant>
+			void AddLoot(CoreLootContainer<LootType, Variant>* Loot) {}
+
+			template<>
+			void AddLoot(CoreLootContainer<LootType, Variance::Chance>* Loot) {
 				if (CanAddLoot(Loot))
 					WeightedLootBag.AddLoot(Loot);
 			}
 
 
-			template<Obtainabilities Obtainability>
-			void AddLoot(CoreLoot<LootType, Variance::Constant, Obtainability>* Loot) {
+			template<>
+			void AddLoot(CoreLootContainer<LootType, Variance::Constant>* Loot) {
 				if (CanAddLoot(Loot))
 					ConstantLootBag.AddLoot(Loot);
 			}
 
-			template<Obtainabilities Obtainability>
-			void AddLoot(CoreLoot<LootType, Variance::Interval, Obtainability>* Loot) {
+			template<>
+			void AddLoot(CoreLootContainer<LootType, Variance::Interval>* Loot) {
 				if (CanAddLoot(Loot))
 					IntervalLootBag.AddLoot(Loot);
 			}
 
 			uint64_t GetTotalLoot() {
 				return	(uint64_t)(WeightedLootBag.GetNumOfLoot()) +
-					(uint64_t)(IntervalLootBag.GetNumOfLoot()) +
-					(uint64_t)(ConstantLootBag.GetNumOfLoot());
+						(uint64_t)(IntervalLootBag.GetNumOfLoot()) +
+						(uint64_t)(ConstantLootBag.GetNumOfLoot());
 				return 0;
 			}
 
@@ -133,10 +138,10 @@ namespace Dropt {
 		{
 		public:
 			CoreLootContainer<LootType, Variant>* GetSibling() { 
-				return static_cast<CoreLootContainer<LootType,Variant>*>(Sibling); }
+				return static_cast<CoreLootContainer<LootType,Variant>*>(this->Sibling); }
 		protected:
 			CoreLootTable(AbstractLootDispatcher* _Sibling) :
-				BaseLootTable(_Sibling) 
+				BaseLootTable<LootType>(_Sibling) 
 			{
 
 			}

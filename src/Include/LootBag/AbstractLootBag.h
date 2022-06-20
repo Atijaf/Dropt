@@ -11,11 +11,12 @@ namespace Dropt {
 
 		// Forward Declaration
 		//template<typename LootType, Variance ContentVariant>
-		//class CoreLootBagInterface;
+		//class CoreLootBag;
 
 		class AbstractLootBag {
 		public:
 			bool IsLootBagFinalized() const { return bIsFinalized; }
+			AbstractLootDispatcher* GetSibling() { return Sibling; }
 
 		protected:
 			AbstractLootBag(AbstractLootDispatcher* _Sibling):
@@ -36,7 +37,6 @@ namespace Dropt {
 
 			virtual uint32_t GetNumOfLoot() const = 0;
 
-			AbstractLootDispatcher* GetSibling() { return Sibling; }
 
 			AbstractLootDispatcher* Sibling;
 
@@ -55,13 +55,13 @@ namespace Dropt {
 		/// </summary>
 		/// <typeparam name="LootType"> Type of Loot being stored in the Bag</typeparam>
 		template<typename LootType>
-		class BaseLootBag : public AbstractLootBag
+		class AbstractBaseLootBag : public AbstractLootBag
 		{
 		public:
 			// Updates OutLoot and returns true if Loot is Obtained
 			bool GetLoot(std::list<LootType*>& OutLoot) { return GetSibling()->GetLoot(OutLoot); }
 		protected:
-			BaseLootBag(AbstractLootDispatcher* _Sibling) :
+			AbstractBaseLootBag(AbstractLootDispatcher* _Sibling) :
 				AbstractLootBag(_Sibling) {};
 
 			virtual bool GrabLoot(std::list<LootType*>& OutLoot) = 0;
@@ -75,16 +75,16 @@ namespace Dropt {
 		};
 
 		template<typename LootType, Variance Variant>
-		class CoreLootBag : public BaseLootBag<LootType>
+		class BaseLootBag : public AbstractBaseLootBag<LootType>
 		{
 		public:
-		protected:
-			CoreLootBag(AbstractLootDispatcher* _Sibling):
-				BaseLootBag(_Sibling){}
-
 			CoreLootContainer<LootType, Variant>* GetSibling() {
-				return static_cast<CoreLootContainer<LootType, Variant>*(Sibling);
+				return static_cast<CoreLootContainer<LootType, Variant>*>(this->Sibling);
 			}
+		protected:
+			BaseLootBag(AbstractLootDispatcher* _Sibling):
+				AbstractBaseLootBag<LootType>(_Sibling){}
+
 		};
 
 
@@ -95,14 +95,16 @@ namespace Dropt {
 		/// </summary>
 		/// <typeparam name="LootType"></typeparam>
 		template<typename LootType, Variance BagVariant, Variance ContentVariant>
-		class CoreLootBagInterface : public CoreLootBag<LootType, BagVariant>
+		class CoreLootBag : public BaseLootBag<LootType, BagVariant>
 		{
 		public:
 			// Catch all add loot function
-			template<Obtainabilities Obtainability>
-			bool AddLoot(CoreLoot<LootType, ContentVariant, Obtainability>* Loot);
-			uint32_t GetNumOfLoot() const override { return LootArray.GetNumOfElements() - LootArrayIndexOffset; }
+			bool AddLoot(CoreLootContainer<LootType, ContentVariant>* Loot);
+			uint32_t GetNumOfLoot() const override { return LootArray.GetNumOfElements() - this->LootArrayIndexOffset; }
 
+			CoreLootContainer<LootType, BagVariant>* GetSibling() {
+				return static_cast<CoreLootContainer<LootType, BagVariant>*>(this->Sibling);
+			}
 			
 		protected:
 			/// <summary>
@@ -110,35 +112,32 @@ namespace Dropt {
 			/// </summary>
 			/// <param name="FuncSort">:	Sorting Function that returns bools and accepts two CoreLootContainer Pointers</param>
 			/// <param name="InitialSize">:	Starting size of the array (Default 10)</param>
-			CoreLootBagInterface<LootType, BagVariant, ContentVariant>(	
+			CoreLootBag<LootType, BagVariant, ContentVariant>(	
 					uint32_t					InitialSize,
 					AbstractLootDispatcher*		_Sibling):
 				
 				// Initializers		
-				CoreLootBag(_Sibling),
+				BaseLootBag<LootType, BagVariant>(_Sibling),
 				LootArray(InitialSize) 
 			{
 			};
 
-			virtual ~CoreLootBagInterface() {};
+			virtual ~CoreLootBag() {};
 
-			virtual void RemoveIndexFromArray(const uint32_t Index) override {};
+			virtual void RemoveIndexFromArray(const uint32_t Index) override;
 			virtual void TrimArray() override;
-			CoreLootContainer<LootType, BagVariant>* GetSibling() {
-				return static_cast<CoreLootContainer<LootType, BagVariant>*>(Sibling);
-			}
 
 			Dropt::Helper::MArray<CoreLootContainer<LootType, ContentVariant>*> LootArray;
 		};
 
 
 		template<typename LootType, Variance BagVariant, Variance ContentVariant>
-		class CoreLootBagImpl : public CoreLootBagInterface<LootType, BagVariant, ContentVariant> {
+		class CoreLootBagImpl : public CoreLootBag<LootType, BagVariant, ContentVariant> {
 		protected:
 			CoreLootBagImpl<LootType, BagVariant, ContentVariant>(	
 					uint32_t				InitialSize,
 					AbstractLootDispatcher* _Sibling):
-				CoreLootBagInterface(InitialSize, _Sibling) 
+				CoreLootBag(InitialSize, _Sibling) 
 			{
 
 			};
@@ -149,8 +148,7 @@ namespace Dropt {
 
 
 		template<typename LootType, Variance BagVariant, Variance ContentVariant>
-		template<Obtainabilities Obtainability>
-		inline bool CoreLootBagInterface<LootType, BagVariant, ContentVariant>::AddLoot(CoreLoot<LootType, ContentVariant, Obtainability>* Loot)
+		inline bool CoreLootBag<LootType, BagVariant, ContentVariant>::AddLoot(CoreLootContainer<LootType, ContentVariant>* Loot)
 		{
 			// Any Loot being added to a Loot Bag must be finalized..  i.e. Confirmed to be able to return loot
 			// This solves circular nested Loot.
@@ -162,9 +160,9 @@ namespace Dropt {
 			return LootArray.AddElement(Loot);
 		}
 
-		/*
+		
 		template<typename LootType, Variance BagVariant, Variance ContentVariant>
-		inline void CoreLootBagInterface<LootType, BagVariant, ContentVariant>::RemoveIndexFromArray(const uint32_t Index)
+		inline void CoreLootBag<LootType, BagVariant, ContentVariant>::RemoveIndexFromArray(const uint32_t Index)
 		{
 			// Remove loot by shifting all elements from the right to Index
 			// i.e. Move Element at Index to the last index
@@ -183,20 +181,20 @@ namespace Dropt {
 			LootArray[i] = nullptr;
 
 			// Increment Counter, check if we reached threshold to resize array
-			++LootArrayIndexOffset;
-			if (LootArrayIndexOffset >= ResizeArrayThreshold) {
+			++this->LootArrayIndexOffset;
+			if (this->LootArrayIndexOffset >= this->ResizeArrayThreshold) {
 				TrimArray();
 			}
 		}
-		*/
+		
 
 		template<typename LootType, Variance BagVariant, Variance ContentVariant>
-		inline void impl::CoreLootBagInterface<LootType, BagVariant, ContentVariant>::TrimArray()
+		inline void impl::CoreLootBag<LootType, BagVariant, ContentVariant>::TrimArray()
 		{
-			bIsFinalized = false;
+			this->bIsFinalized = false;
 			LootArray.Resize(GetNumOfLoot());
-			LootArrayIndexOffset = 0;
-			FinalizeLootBag();
+			this->LootArrayIndexOffset = 0;
+			this->FinalizeLootBag();
 		}
 	}
 }

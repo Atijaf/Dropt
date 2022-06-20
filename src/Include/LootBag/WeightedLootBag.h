@@ -10,11 +10,11 @@ namespace Dropt {
 		/// </summary>
 		/// <typeparam name="LootType"></typeparam>
 		template<typename LootType, Variance BagVariant>
-		class CoreLootBagImpl<LootType, BagVariant, Variance::Chance> : public CoreLootBagInterface<LootType, BagVariant, Variance::Chance>
+		class CoreLootBagImpl<LootType, BagVariant, Variance::Chance> : public CoreLootBag<LootType, BagVariant, Variance::Chance>
 		{
 		public:
 			CoreLootBagImpl(uint32_t InitialSize, AbstractLootDispatcher* _Sibling) :	// Initialization list
-				CoreLootBagInterface(InitialSize, _Sibling)
+				CoreLootBag<LootType,BagVariant,Variance::Chance>(InitialSize, _Sibling)
 			{}
 
 		protected:
@@ -53,7 +53,7 @@ namespace Dropt {
 			// This only needs to occur once, as we never rearrange the array in a way that unsorts it
 			// See @RemoveIndexFromArray(uint32_t Index)
 			if (!bIsSorted) {
-				LootArray.Sort([](CoreLootContainer<LootType, Variance::Chance>* A, CoreLootContainer<LootType, Variance::Chance>* B)
+				this->LootArray.Sort([](CoreLootContainer<LootType, Variance::Chance>* A, CoreLootContainer<LootType, Variance::Chance>* B)
 					{
 						return(*A > *B);
 					});
@@ -73,18 +73,18 @@ namespace Dropt {
 		{
 			const uint32_t GCF = FindGCFOfWeights();
 			if (GCF > 1)
-				for (uint32_t i = 0; i < GetNumOfLoot(); ++i)
-					LootArray[i]->SetWeight(LootArray[i]->GetWeight() / GCF);
+				for (uint32_t i = 0; i < this->GetNumOfLoot(); ++i)
+					this->LootArray[i]->SetWeight(this->LootArray[i]->GetWeight() / GCF);
 		}
 
 		template<typename LootType, Variance BagVariant>
 		inline void CoreLootBagImpl<LootType, BagVariant, Variance::Chance>::RemoveIndexFromArray(const uint32_t Index)
 		{
 			// Call Parent Function (Like super)
-			CoreLootBagInterface::RemoveIndexFromArray(Index);
+			CoreLootBag<LootType,BagVariant,Variance::Chance>::RemoveIndexFromArray(Index);
 
 			// If the Offset is 0, then the Parent call has finished all work that needed to be done
-			if (LootArrayIndexOffset == 0)
+			if (this->LootArrayIndexOffset == 0)
 				return;
 			// Otherwise, we NEED to perform these actions
 			DefineRelativeWeights();
@@ -95,7 +95,7 @@ namespace Dropt {
 		inline uint32_t CoreLootBagImpl<LootType, BagVariant, Variance::Chance>::FindGCFOfWeights() const
 		{
 
-			if (LootArray.GetNumOfElements() == 0)
+			if (this->LootArray.GetNumOfElements() == 0)
 				return 0;
 
 			// Recursive LAMBDA to find GCD of pair
@@ -106,10 +106,10 @@ namespace Dropt {
 			};
 
 			uint32_t Index = this->GetNumOfLoot() - 1;
-			uint32_t Result = LootArray[Index]->GetWeight();
+			uint32_t Result = this->LootArray[Index]->GetWeight();
 			--Index;
-			for (uint32_t i = 1; i < LootArray.GetNumOfElements(); ++i, --Index) {
-				Result = GCD(LootArray[Index]->GetWeight(), Result);
+			for (uint32_t i = 1; i < this->LootArray.GetNumOfElements(); ++i, --Index) {
+				Result = GCD(this->LootArray[Index]->GetWeight(), Result);
 
 				// No need to further check for GCDs
 				if (Result == 1)
@@ -121,11 +121,11 @@ namespace Dropt {
 		template<typename LootType, Variance BagVariant>
 		inline void impl::CoreLootBagImpl<LootType, BagVariant, Variance::Chance>::DefineRelativeWeights()
 		{
-			uint32_t Index = GetNumOfLoot() - 1;
+			uint32_t Index = this->GetNumOfLoot() - 1;
 			uint64_t WeightSum = 0;
-			for (uint32_t i = 0; i < GetNumOfLoot(); ++i, --Index) {
-				WeightSum += LootArray[Index]->GetWeight();
-				LootArray[Index]->SetRelativeWeight(WeightSum);
+			for (uint32_t i = 0; i < this->GetNumOfLoot(); ++i, --Index) {
+				WeightSum += this->LootArray[Index]->GetWeight();
+				this->LootArray[Index]->SetRelativeWeight(WeightSum);
 			}
 
 		}
@@ -133,7 +133,7 @@ namespace Dropt {
 		template<typename LootType, Variance BagVariant>
 		inline void CoreLootBagImpl<LootType, BagVariant, Variance::Chance>::DefineDice()
 		{
-			BagIntDistrib = std::uniform_int_distribution<uint64_t>(0, LootArray[0]->GetRelativeWeight() - 1);
+			this->BagIntDistrib = std::uniform_int_distribution<uint64_t>(0, this->LootArray[0]->GetRelativeWeight() - 1);
 		}
 
 		template<typename LootType, Variance BagVariant>
@@ -141,12 +141,12 @@ namespace Dropt {
 			bool bReturnFlag = true;
 			CoreLootContainer<LootType, Variance::Chance>* Loot = nullptr;
 			uint32_t LootIndex = 0;
-			if (GetNumOfLoot() > 1) {
-				uint64_t RandomRoll = BagIntDistrib(Dropt::Helper::RandomEngine);
+			if (this->GetNumOfLoot() > 1) {
+				uint64_t RandomRoll = this->BagIntDistrib(Dropt::Helper::RandomEngine);
 				Loot = FindLootFromRandomNumber(RandomRoll, LootIndex);
 			}
 			else {
-				Loot = LootArray[0];
+				Loot = this->LootArray[0];
 			}
 			if (!Loot->GetLoot(OutLoot))
 				bReturnFlag = false;// Debug.  This shouldn't ever happen, but if it does, investigate
@@ -166,13 +166,13 @@ namespace Dropt {
 			// Random Number: 2
 			OutLootIndex = 0; // Default
 			uint32_t i = 1;
-			for (i; i < GetNumOfLoot(); i++) {
-				if (LootArray[i]->GetRelativeWeight() < RandomNumber) {
+			for (i; i < this->GetNumOfLoot(); i++) {
+				if (this->LootArray[i]->GetRelativeWeight() < RandomNumber) {
 					OutLootIndex = i - 1;
-					return LootArray[OutLootIndex];
+					return this->LootArray[OutLootIndex];
 				}
 			}
-			return LootArray[i];
+			return this->LootArray[i];
 		}
 	}
 }

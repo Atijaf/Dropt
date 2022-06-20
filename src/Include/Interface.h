@@ -13,7 +13,6 @@ namespace Dropt {
 	class Interface
 	{
 	public:	
-		
 
 		/// <summary>
 		/// Creates a Loot Table that contains a weight
@@ -30,7 +29,18 @@ namespace Dropt {
 			OutTable->GetSibling()->SetWeight(Weight);
 			return OutTable;
 		}
-		
+
+		template<typename LootType, Variance ContentVariant>
+		CoreLootBag<LootType, Variance::Chance, ContentVariant>* CreateBag_Weighted(const char* BagName, uint32_t BagWeight, uint32_t MaxNumObtainable = -1)
+		{
+			auto OutBag = CreateLootBag<LootType, Variance::Chance, ContentVariant>(BagName, MaxNumObtainable);
+			OutBag->GetSibling()->SetWeight(BagWeight);
+			return OutBag;
+		}
+
+		/// <summary>
+		/// Creates a Loot Table that contains an Interval
+		/// </summary>
 		template<typename LootType>
 		CoreLootTable<LootType, Variance::Interval>* CreateLootTable_Interval(const char* TableName, uint32_t Interval, uint32_t MaxNumObtainable = -1)
 		{
@@ -39,10 +49,27 @@ namespace Dropt {
 			return OutTable;
 		}
 
+		template<typename LootType, Variance ContentVariant>
+		CoreLootBag<LootType, Variance::Interval, ContentVariant>* CreateBag_Interval(const char* BagName, uint32_t BagInterval, uint32_t MaxNumObtainable = -1)
+		{
+			auto OutBag = CreateLootBag<LootType, Variance::Interval, ContentVariant>(BagName, MaxNumObtainable);
+			OutBag->GetSibling()->SetInterval(BagInterval);
+			return OutBag;
+		}
+
+		/// <summary>
+		/// Creates a Loot Table that is constant
+		/// </summary>
 		template<typename LootType>
 		CoreLootTable<LootType, Variance::Constant>* CreateLootTable_Constant(const char* TableName, uint32_t MaxNumObtainable = -1)
 		{
 			return CreateLootTable<LootType, Variance::Constant>(TableName, MaxNumObtainable);
+		}
+
+		template<typename LootType, Variance ContentVariant>
+		CoreLootBag<LootType, Variance::Constant, ContentVariant>* CreateBag_Constant(const char* BagName, uint32_t MaxNumObtainable = -1)
+		{
+			return CreateLootBag<LootType, Variance::Constant, ContentVariant>(BagName, MaxNumObtainable);
 		}
 
 
@@ -64,6 +91,24 @@ namespace Dropt {
 			}
 			AddToMemoryContainer(TableName, OutTable->GetSibling());
 			return OutTable;
+		}
+
+		template<typename LootType, Variance BagVariant, Variance ContentVariant>
+		CoreLootBag<LootType, BagVariant, ContentVariant>* CreateLootBag(const char* BagName, uint32_t MaxNumObtainable) {
+			CoreLootBag<LootType, Variance::Chance, BagVariant>* OutBag;
+			if (MaxNumObtainable == (uint32_t)-1) {
+				OutBag = new LootBag<LootType, BagVariant, Obtainabilities::Common, ContentVariant>();
+			}
+			else if (MaxNumObtainable == 1) {
+				OutBag = new LootBag<LootType, BagVariant, Obtainabilities::Unique, ContentVariant>();
+			}
+			else {
+				auto TmpTable = new LootBag<LootType, BagVariant, Obtainabilities::Variable, ContentVariant>();
+				TmpTable->SetMaxNumOfTimesLootCanBeObtained(MaxNumObtainable);
+				OutBag = TmpTable;
+			}
+			AddToMemoryContainer(BagName, OutBag->GetSibling());
+			return OutBag;
 		}
 
 		bool AddToMemoryContainer(const char* DataName, AbstractLootDispatcher* Data) {
