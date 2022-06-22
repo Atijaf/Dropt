@@ -98,13 +98,13 @@
     <ClInclude Include="src\Include\Helper\Globals.h" />
     <ClInclude Include="src\Include\Helper\MArray.h" />
     <ClInclude Include="src\Include\Interface.h" />
-    <ClInclude Include="src\Include\LootBag\AbstractLootBag.h" />
-    <ClInclude Include="src\Include\LootBag\ConstantLootBag.h" />
-    <ClInclude Include="src\Include\LootBag\IntervalLootBag.h" />
-    <ClInclude Include="src\Include\LootBag\LootBag.h" />
-    <ClInclude Include="src\Include\LootBag\WeightedLootBag.h" />
-    <ClInclude Include="src\Include\LootTable\AbstractLootTable.h" />
-    <ClInclude Include="src\Include\LootTable\LootTable.h" />
+    <ClInclude Include="src\Include\LootContainers\LootBag\AbstractLootBag.h" />
+    <ClInclude Include="src\Include\LootContainers\LootBag\ConstantLootBag.h" />
+    <ClInclude Include="src\Include\LootContainers\LootBag\IntervalLootBag.h" />
+    <ClInclude Include="src\Include\LootContainers\LootBag\LootBag.h" />
+    <ClInclude Include="src\Include\LootContainers\LootBag\WeightedLootBag.h" />
+    <ClInclude Include="src\Include\LootContainers\LootTable\AbstractLootTable.h" />
+    <ClInclude Include="src\Include\LootContainers\LootTable\LootTable.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Impl\Dispatch.cpp" />

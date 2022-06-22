@@ -48,25 +48,25 @@
     <ClInclude Include="src\Include\Helper\MArray.h">
       <Filter>Include\Helper</Filter>
     </ClInclude>
-    <ClInclude Include="src\Include\LootBag\AbstractLootBag.h">
+    <ClInclude Include="src\Include\LootContainers\LootBag\AbstractLootBag.h">
       <Filter>Include\LootBag</Filter>
     </ClInclude>
-    <ClInclude Include="src\Include\LootBag\ConstantLootBag.h">
+    <ClInclude Include="src\Include\LootContainers\LootBag\ConstantLootBag.h">
       <Filter>Include\LootBag</Filter>
     </ClInclude>
-    <ClInclude Include="src\Include\LootBag\IntervalLootBag.h">
+    <ClInclude Include="src\Include\LootContainers\LootBag\IntervalLootBag.h">
       <Filter>Include\LootBag</Filter>
     </ClInclude>
-    <ClInclude Include="src\Include\LootBag\LootBag.h">
+    <ClInclude Include="src\Include\LootContainers\LootBag\LootBag.h">
       <Filter>Include\LootBag</Filter>
     </ClInclude>
-    <ClInclude Include="src\Include\LootBag\WeightedLootBag.h">
+    <ClInclude Include="src\Include\LootContainers\LootBag\WeightedLootBag.h">
       <Filter>Include\LootBag</Filter>
     </ClInclude>
-    <ClInclude Include="src\Include\LootTable\AbstractLootTable.h">
+    <ClInclude Include="src\Include\LootContainers\LootTable\AbstractLootTable.h">
       <Filter>Include\LootTable</Filter>
     </ClInclude>
-    <ClInclude Include="src\Include\LootTable\LootTable.h">
+    <ClInclude Include="src\Include\LootContainers\LootTable\LootTable.h">
       <Filter>Include\LootTable</Filter>
     </ClInclude>
     <ClInclude Include="src\Include\Interface.h" />

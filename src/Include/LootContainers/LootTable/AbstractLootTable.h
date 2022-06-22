@@ -124,11 +124,14 @@ namespace Dropt {
 
 
 			// LootBag with Weighted Drops
-			LootBag<LootType, Variance::Constant, Obtainabilities::Common, Variance::Chance> WeightedLootBag;
+			LootBag<LootType, Variance::Constant, Obtainabilities::Common, Variance::Chance> 
+				WeightedLootBag;
 			// LootBag with Interval Drops
-			LootBag<LootType, Variance::Constant, Obtainabilities::Common, Variance::Interval> IntervalLootBag;
+			LootBag<LootType, Variance::Constant, Obtainabilities::Common, Variance::Interval> 
+				IntervalLootBag;
 			// LootBag with Constant Drops
-			LootBag<LootType, Variance::Constant, Obtainabilities::Common, Variance::Constant> ConstantLootBag;
+			LootBag<LootType, Variance::Constant, Obtainabilities::Common, Variance::Constant> 
+				ConstantLootBag;
 
 
 		};

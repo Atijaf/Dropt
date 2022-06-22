@@ -1,6 +1,6 @@
 #pragma once
-#include "LootBag/LootBag.h"
-#include "LootTable/LootTable.h"
+#include "LootContainers/LootBag/LootBag.h"
+#include "LootContainers/LootTable/LootTable.h"
 #include "ElementLoot/Loot.h"
 #include <unordered_map>
 #include <type_traits>
@@ -38,6 +38,15 @@ namespace Dropt {
 			return OutBag;
 		}
 
+		template<typename LootType>
+		CoreElementLoot<LootType, Variance::Chance>* CreateLoot_Weighted(const char* LootName, LootType* Loot, uint32_t LootWeight, uint32_t MaxNumObtainable = -1)
+		{
+			auto OutLoot = CreateElementLoot<LootType, Variance::Chance>(LootName, Loot, MaxNumObtainable);
+			OutLoot->GetSibling()->SetWeight(LootWeight);
+			return OutLoot;
+		}
+
+
 		/// <summary>
 		/// Creates a Loot Table that contains an Interval
 		/// </summary>
@@ -57,6 +66,14 @@ namespace Dropt {
 			return OutBag;
 		}
 
+		template<typename LootType>
+		CoreElementLoot<LootType, Variance::Interval>* CreateLoot_Interval(const char* LootName, LootType* Loot, uint32_t LootInterval, uint32_t MaxNumObtainable = -1)
+		{
+			auto OutLoot = CreateElementLoot<LootType, Variance::Interval>(LootName, Loot, MaxNumObtainable);
+			OutLoot->GetSibling()->SetInterval(LootInterval);
+			return OutLoot;
+		}
+
 		/// <summary>
 		/// Creates a Loot Table that is constant
 		/// </summary>
@@ -72,8 +89,16 @@ namespace Dropt {
 			return CreateLootBag<LootType, Variance::Constant, ContentVariant>(BagName, MaxNumObtainable);
 		}
 
+		template<typename LootType>
+		CoreElementLoot<LootType, Variance::Constant>* CreateLoot_Interval(const char* LootName, LootType* Loot, uint32_t MaxNumObtainable = -1)
+		{
+			return CreateElementLoot<LootType, Variance::Constant>(LootName, Loot, MaxNumObtainable);
+		}
+
 
 	private:
+
+
 
 		template<typename LootType, Variance Variant>
 		CoreLootTable<LootType, Variant>* CreateLootTable(const char* TableName, uint32_t MaxNumObtainable) {
@@ -89,7 +114,7 @@ namespace Dropt {
 				TmpTable->SetMaxNumOfTimesLootCanBeObtained(MaxNumObtainable);
 				OutTable = TmpTable;
 			}
-			AddToMemoryContainer(TableName, OutTable->GetSibling());
+			AddToMemoryContainer(TableName, OutTable);
 			return OutTable;
 		}
 
@@ -107,15 +132,43 @@ namespace Dropt {
 				TmpTable->SetMaxNumOfTimesLootCanBeObtained(MaxNumObtainable);
 				OutBag = TmpTable;
 			}
-			AddToMemoryContainer(BagName, OutBag->GetSibling());
+			AddToMemoryContainer(BagName, OutBag);
 			return OutBag;
 		}
 
-		bool AddToMemoryContainer(const char* DataName, AbstractLootDispatcher* Data) {
-			MemoryContainer.insert(std::pair<const char*, AbstractLootDispatcher*>(DataName, Data));
+		template<typename LootType, Variance Variant>
+		CoreElementLoot<LootType, Variant>* CreateElementLoot(const char* LootName, LootType* _Loot, uint32_t MaxNumObtainable) {
+			CoreElementLoot<LootType, Variance::Chance>* OutElementLoot;
+			if (MaxNumObtainable == (uint32_t)-1) {
+				OutElementLoot = new ElementLoot<LootType, Variant, Obtainabilities::Common>(_Loot);
+			}
+			else if (MaxNumObtainable == 1) {
+				OutElementLoot = new ElementLoot<LootType, Variant, Obtainabilities::Unique>(_Loot);
+			}
+			else {
+				auto TmpLoot = new ElementLoot<LootType, Variant, Obtainabilities::Variable>(_Loot);
+				TmpLoot->SetMaxNumOfTimesLootCanBeObtained(MaxNumObtainable);
+				OutElementLoot = TmpLoot;
+			}
+			AddToMemoryContainer(LootName, OutElementLoot);
+			return OutElementLoot;
+		}
+
+		bool AddToMemoryContainer(const char* DataName, AbstractLootTable* Data) {
+			TableMemoryContainer.insert(std::pair<const char*, AbstractLootTable*>(DataName, Data));
 			return true;
 		}
-		std::unordered_multimap<std::string, AbstractLootDispatcher*> MemoryContainer;
+		bool AddToMemoryContainer(const char* DataName, AbstractLootBag* Data) {
+			BagMemoryContainer.insert(std::pair<const char*, AbstractLootBag*>(DataName, Data));
+			return true;
+		}
+		bool AddToMemoryContainer(const char* DataName, AbstractElementLoot* Data) {
+			LootMemoryContainer.insert(std::pair<const char*, AbstractElementLoot*>(DataName, Data));
+			return true;
+		}
+		std::unordered_multimap<std::string, AbstractLootTable*> TableMemoryContainer;
+		std::unordered_multimap<std::string, AbstractLootBag*> BagMemoryContainer;
+		std::unordered_multimap<std::string, AbstractElementLoot*> LootMemoryContainer;
 
 	};
 }

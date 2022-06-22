@@ -87,8 +87,9 @@ namespace Dropt {
 						else
 							break;
 					}
-					OutIndexRangesToRemove[OutSize++] = MaxRange;
-					OutIndexRangesToRemove[OutSize++] = MinRange;
+					OutIndexRangesToRemove[OutSize] = MaxRange;
+					OutIndexRangesToRemove[OutSize+1] = MinRange;
+					OutSize += 2;
 
 					// We have effectively eliminated some contents of @RemovingIndexes.  Decrement ArraySize
 					const uint32_t GapSize = (MaxRange - MinRange + 1);

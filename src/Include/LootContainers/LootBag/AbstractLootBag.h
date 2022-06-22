@@ -1,13 +1,16 @@
 #pragma once
-#include "../ElementLoot/Loot.h"
-#include "../Helper/MArray.h"
-#include "../Helper/Globals.h"
-#include "../Core/CoreLoot.h"
+#include "../../ElementLoot/Loot.h"
+#include "../../Helper/MArray.h"
+#include "../../Helper/Globals.h"
+#include "../../Core/CoreLoot.h"
 #include <random>
 
 namespace Dropt {
 	namespace impl
 	{
+		//TIHI Forward declared Loot Table
+		template<typename LootTypeTmp, Variance Variant>
+		class CoreLootTable;
 
 		// Forward Declaration
 		//template<typename LootType, Variance ContentVariant>
@@ -87,8 +90,6 @@ namespace Dropt {
 
 		};
 
-
-
 		/// <summary>
 		/// A sort of Interface class that allows adding loot, 
 		/// and provides pure virtual functions for derived classes to define
@@ -98,8 +99,10 @@ namespace Dropt {
 		class CoreLootBag : public BaseLootBag<LootType, BagVariant>
 		{
 		public:
-			// Catch all add loot function
 			bool AddLoot(CoreLootContainer<LootType, ContentVariant>* Loot);
+			bool AddLoot(BaseLootBag<LootType, ContentVariant>* Loot);
+			bool AddLoot(CoreLootTable<LootType, ContentVariant>* Loot);
+
 			uint32_t GetNumOfLoot() const override { return LootArray.GetNumOfElements() - this->LootArrayIndexOffset; }
 
 			CoreLootContainer<LootType, BagVariant>* GetSibling() {
@@ -159,6 +162,21 @@ namespace Dropt {
 			}
 			return LootArray.AddElement(Loot);
 		}
+
+		template<typename LootType, Variance BagVariant, Variance ContentVariant>
+		inline bool CoreLootBag<LootType, BagVariant, ContentVariant>::AddLoot(BaseLootBag<LootType, ContentVariant>* Loot)
+		{
+			return AddLoot(Loot->GetSibling());
+		}
+
+		template<typename LootType, Variance BagVariant, Variance ContentVariant>
+		inline bool CoreLootBag<LootType, BagVariant, ContentVariant>::AddLoot(CoreLootTable<LootType, ContentVariant>* Loot)
+		{
+			return AddLoot(Loot->GetSibling()); // This works due to forward declaration of CoreLootTable
+		}
+
+
+		
 
 		
 		template<typename LootType, Variance BagVariant, Variance ContentVariant>
