@@ -34,31 +34,32 @@ int main()
 
 
 	{
-		Armor Chestplate("Chest Armor");
-		Armor Helmet("Head Gear");
-		Armor LegArmor("Leg Armor");
-		Armor Gloves("Hand Armor");
+		Armor* ChestPlate = new Armor("Chest Armor");
+		Armor* Helmet = new Armor("Head Gear");
+		Armor* LegArmor = new Armor("Leg Armor");
+		Armor* Gloves = new Armor("Hand Armor");
 
-		
-		ElementLoot<Armor, Variance::Chance, Obtainabilities::Unique> ChestPlateLoot(&Chestplate);
-		ElementLoot<Armor, Variance::Chance, Obtainabilities::Unique> HelmetLoot(&Helmet);
-		ElementLoot<Armor, Variance::Chance, Obtainabilities::Common> LegLoot(&LegArmor);
-		ElementLoot<Armor, Variance::Chance, Obtainabilities::Unique> HandLoot(&Gloves);
-
-		ChestPlateLoot.SetWeight(2);
-		HelmetLoot.SetWeight(5);
-		LegLoot.SetWeight(20);
-		HandLoot.SetWeight(8);
+		auto GloveLoot = Inter.CreateElementLoot_Weighted<Armor>("Hand Armor", Gloves, 121, 10);
+		auto ChestPlateLoot = Inter.CreateElementLoot_Weighted<Armor>("Chestplate", ChestPlate, 50, 2);
+		auto HelmetLoot = Inter.CreateElementLoot_Weighted<Armor>("Helmet", Helmet, 50, 6);
+		auto LegLoot = Inter.CreateElementLoot_Weighted<Armor>("Leg", LegArmor, 2, 20);
 
 		auto Table = Inter.CreateLootTable_Weighted<Armor>("PoopyTable", 50);
 		auto Bag = Inter.CreateBag_Weighted<Armor, Variance::Chance>("PoopyBag", 50);
 
-		Table->AddLoot(&ChestPlateLoot);
-
-		Bag->AddLoot(&HelmetLoot);
-
+		Table->AddLoot(ChestPlateLoot);
+		Table->AddLoot(HelmetLoot);
+		Table->AddLoot(LegLoot);
+		Table->AddLoot(GloveLoot);
+		Table->GetSibling()->FinalizeLoot();
 
 		std::list<Armor*> OutLoot;
-		Table->GetLoot(OutLoot);
+		for (int i = 0; i < 40; ++i) {
+			Table->GetLoot(OutLoot);
+			std::cout << "Loot Obtained: ";
+			std::cout << OutLoot.back()->Name << "\n";
+		}
+
+		std::cout << "\nTotal Loot Obtained: " << OutLoot.size();
 	}
 }

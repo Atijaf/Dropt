@@ -43,6 +43,16 @@ namespace Dropt {
 			}
 
 			template<Variance Variant>
+			void AddLoot(CoreLootTable<LootType, Variant>* Loot) {
+				AddLoot(Loot->GetSibling());
+			}
+
+			template<Variance Variant>
+			void AddLoot(CoreElementLoot<LootType, Variant>* Loot) {
+				AddLoot(Loot->GetSibling());
+			}
+
+			template<Variance Variant>
 			void AddLoot(CoreLootContainer<LootType, Variant>* Loot) {}
 
 			template<>

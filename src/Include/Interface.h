@@ -39,7 +39,7 @@ namespace Dropt {
 		}
 
 		template<typename LootType>
-		CoreElementLoot<LootType, Variance::Chance>* CreateLoot_Weighted(const char* LootName, LootType* Loot, uint32_t LootWeight, uint32_t MaxNumObtainable = -1)
+		CoreElementLoot<LootType, Variance::Chance>* CreateElementLoot_Weighted(const char* LootName, LootType* Loot, uint32_t LootWeight, uint32_t MaxNumObtainable = -1)
 		{
 			auto OutLoot = CreateElementLoot<LootType, Variance::Chance>(LootName, Loot, MaxNumObtainable);
 			OutLoot->GetSibling()->SetWeight(LootWeight);
@@ -67,7 +67,7 @@ namespace Dropt {
 		}
 
 		template<typename LootType>
-		CoreElementLoot<LootType, Variance::Interval>* CreateLoot_Interval(const char* LootName, LootType* Loot, uint32_t LootInterval, uint32_t MaxNumObtainable = -1)
+		CoreElementLoot<LootType, Variance::Interval>* CreateElementLoot_Interval(const char* LootName, LootType* Loot, uint32_t LootInterval, uint32_t MaxNumObtainable = -1)
 		{
 			auto OutLoot = CreateElementLoot<LootType, Variance::Interval>(LootName, Loot, MaxNumObtainable);
 			OutLoot->GetSibling()->SetInterval(LootInterval);
@@ -90,7 +90,7 @@ namespace Dropt {
 		}
 
 		template<typename LootType>
-		CoreElementLoot<LootType, Variance::Constant>* CreateLoot_Interval(const char* LootName, LootType* Loot, uint32_t MaxNumObtainable = -1)
+		CoreElementLoot<LootType, Variance::Constant>* CreateElementLoot_Interval(const char* LootName, LootType* Loot, uint32_t MaxNumObtainable = -1)
 		{
 			return CreateElementLoot<LootType, Variance::Constant>(LootName, Loot, MaxNumObtainable);
 		}

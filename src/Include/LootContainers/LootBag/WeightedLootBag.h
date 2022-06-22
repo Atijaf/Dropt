@@ -55,7 +55,7 @@ namespace Dropt {
 			if (!bIsSorted) {
 				this->LootArray.Sort([](CoreLootContainer<LootType, Variance::Chance>* A, CoreLootContainer<LootType, Variance::Chance>* B)
 					{
-						return(*A > *B);
+						return(A->GetWeight() > B->GetWeight());
 					});
 				bIsSorted = true;
 			}
@@ -143,6 +143,7 @@ namespace Dropt {
 			uint32_t LootIndex = 0;
 			if (this->GetNumOfLoot() > 1) {
 				uint64_t RandomRoll = this->BagIntDistrib(Dropt::Helper::RandomEngine);
+				std::cout << "Random Roll: " << RandomRoll << "\n";
 				Loot = FindLootFromRandomNumber(RandomRoll, LootIndex);
 			}
 			else {
@@ -172,7 +173,7 @@ namespace Dropt {
 					return this->LootArray[OutLootIndex];
 				}
 			}
-			return this->LootArray[i];
+			return this->LootArray[i - 1];
 		}
 	}
 }

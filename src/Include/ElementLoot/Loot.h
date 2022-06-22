@@ -2,6 +2,9 @@
 #include "../Core/Dispatch.h"
 #include "../Core/CoreLoot.h"
 
+//debug
+#include <iostream>
+
 namespace Dropt {
 	namespace impl
 	{
@@ -53,13 +56,11 @@ namespace Dropt {
 			using CoreLoot<LootType, Variant, Obtainability>::GetLoot;
 		protected:
 			bool GetLoot_Impl(std::list<LootType*>& OutLoot) override {
-				OutLoot.push_back(Loot);
+				OutLoot.push_back(this->Loot);
 				return true;
 			}
 
 			virtual bool IsFinalized() const override { return true; }
-
-			LootType* Loot;
 		};
 	}
 }
