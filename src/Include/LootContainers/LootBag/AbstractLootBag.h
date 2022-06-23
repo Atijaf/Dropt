@@ -87,7 +87,6 @@ namespace Dropt {
 		protected:
 			BaseLootBag(AbstractLootDispatcher* _Sibling):
 				AbstractBaseLootBag<LootType>(_Sibling){}
-
 		};
 
 		/// <summary>
@@ -102,6 +101,14 @@ namespace Dropt {
 			bool AddLoot(CoreLootContainer<LootType, ContentVariant>* Loot);
 			bool AddLoot(BaseLootBag<LootType, ContentVariant>* Loot);
 			bool AddLoot(CoreLootTable<LootType, ContentVariant>* Loot);
+			bool AddLoot(CoreElementLoot<LootType, ContentVariant>* Loot);
+
+			CoreLootContainer<LootType, ContentVariant>* GetElementAtIndex(uint32_t Index) {
+				if (Index < LootArray.GetNumOfElements())
+					return LootArray[Index];
+				return nullptr;
+			}
+			
 
 			uint32_t GetNumOfLoot() const override { return LootArray.GetNumOfElements() - this->LootArrayIndexOffset; }
 
@@ -174,6 +181,13 @@ namespace Dropt {
 		{
 			return AddLoot(Loot->GetSibling()); // This works due to forward declaration of CoreLootTable
 		}
+
+		template<typename LootType, Variance BagVariant, Variance ContentVariant>
+		inline bool CoreLootBag<LootType, BagVariant, ContentVariant>::AddLoot(CoreElementLoot<LootType, ContentVariant>* Loot)
+		{
+			return AddLoot(Loot->GetSibling());
+		}
+
 
 
 		

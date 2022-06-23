@@ -26,6 +26,14 @@ namespace Dropt {
 			MArray(uint32_t InitialSize) :
 				Size(InitialSize),
 				ArrayOfElements(new T[Size]) {};
+
+			MArray(const MArray<T>& OG) :
+				Size(OG.GetSize()),
+				ArrayOfElements(new T[Size]) 
+			{
+				for (int i = 0; i < Size; ++i)
+					ArrayOfElements[i] = OG.ArrayOfElements[i];
+			}
 			~MArray();
 
 			bool Resize(uint32_t NewSize);

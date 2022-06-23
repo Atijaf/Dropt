@@ -90,7 +90,7 @@ namespace Dropt {
 		}
 
 		template<typename LootType>
-		CoreElementLoot<LootType, Variance::Constant>* CreateElementLoot_Interval(const char* LootName, LootType* Loot, uint32_t MaxNumObtainable = -1)
+		CoreElementLoot<LootType, Variance::Constant>* CreateElementLoot_Constant(const char* LootName, LootType* Loot, uint32_t MaxNumObtainable = -1)
 		{
 			return CreateElementLoot<LootType, Variance::Constant>(LootName, Loot, MaxNumObtainable);
 		}
@@ -120,7 +120,7 @@ namespace Dropt {
 
 		template<typename LootType, Variance BagVariant, Variance ContentVariant>
 		CoreLootBag<LootType, BagVariant, ContentVariant>* CreateLootBag(const char* BagName, uint32_t MaxNumObtainable) {
-			CoreLootBag<LootType, Variance::Chance, BagVariant>* OutBag;
+			CoreLootBag<LootType,BagVariant,ContentVariant>* OutBag;
 			if (MaxNumObtainable == (uint32_t)-1) {
 				OutBag = new LootBag<LootType, BagVariant, Obtainabilities::Common, ContentVariant>();
 			}
