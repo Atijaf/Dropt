@@ -13,18 +13,21 @@ namespace Dropt {
 		class AbstractLootTable
 		{
 		public:
-			bool IsLootTableFinalized() const { return bLootTableFinalized; }
-			virtual bool FinalizeLootTable() = 0;
+			bool IsLootTableFinalized() const { return bIsFinalized; }
 			AbstractLootDispatcher* GetSibling() { return Sibling; }
+			bool FinalizeLoot() {
+				return GetSibling()->FinalizeLoot();
+			}
 
 		protected:
+			virtual bool FinalizeLootTable() = 0;
 			AbstractLootTable(AbstractLootDispatcher* _Sibling) :
 				Sibling(_Sibling)
 			{
 
 			}
 
-			bool bLootTableFinalized = false;
+			bool bIsFinalized = false;
 			AbstractLootDispatcher* Sibling;
 		};
 
@@ -110,10 +113,10 @@ namespace Dropt {
 			}
 
 			bool FinalizeLootTable() {
-				bLootTableFinalized = (WeightedLootBag.FinalizeLoot() &&
+				bIsFinalized = (WeightedLootBag.FinalizeLoot() &&
 					IntervalLootBag.FinalizeLoot() &&
 					ConstantLootBag.FinalizeLoot());
-				return bLootTableFinalized;
+				return bIsFinalized;
 			}
 
 			template<Variance Variant>

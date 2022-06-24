@@ -14,7 +14,11 @@ namespace Dropt {
 
 			}
 			using CoreLoot<LootType, Variant, Obtainability>::GetLoot;	// Ambiguous solution
-			bool FinalizeLoot() override { return this->FinalizeLootTable(); }
+			bool FinalizeLoot() override final { 
+				if (this->FinalizeLootTable())
+					this->bIsFinalized;
+				return this->bIsFinalized; 
+			}
 		protected:
 			bool GetLoot_Impl(std::list<LootType*>& OutLoot) override {
 				return this->RollForLoot(OutLoot);

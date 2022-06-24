@@ -24,7 +24,7 @@ namespace Dropt {
 			virtual void RemoveIndexFromArray(const uint32_t Index) override;
 
 			// Performs final actions, required to allow this bag to be grabbed from
-			virtual bool FinalizeLootBag_impl() override final;
+			virtual bool FinalizeLootBag() override;
 			// Finds GCF amongs all elements weights (5,10,15: GCF is 5)
 			uint32_t FindGCFOfWeights() const;
 			// Reduces all elements weights based on GCF(5,10,15: GCF is 5 : 1,2,3)
@@ -44,8 +44,9 @@ namespace Dropt {
 
 
 		template<typename LootType, Variance BagVariant>
-		inline bool impl::CoreLootBagImpl<LootType, BagVariant, Variance::Chance>::FinalizeLootBag_impl()
+		inline bool impl::CoreLootBagImpl<LootType, BagVariant, Variance::Chance>::FinalizeLootBag()
 		{
+			if (!AbstractLootBag::FinalizeLootBag()) return false;
 			// Find GCF of all weights in LootArray and reduce the weights based off that;
 			ReduceToGCF();
 

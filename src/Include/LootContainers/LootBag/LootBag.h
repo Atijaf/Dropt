@@ -25,8 +25,10 @@ namespace Dropt {
 			LootBag(uint32_t InitialSize = 10) :
 				CoreLootBagImpl<LootType,BagVariant, ContentVariant>(InitialSize,(this)) {};
 			// Performs final actions on a Loot Table to prepare it for grabs
-			bool FinalizeLoot() override {
-				return this->FinalizeLootBag();
+			bool FinalizeLoot() override final{
+				if (this->FinalizeLootBag())
+					this->bIsFinalized = true;
+				return this->bIsFinalized;
 			}
 
 			bool IsFinalized() const override { return this->IsLootBagFinalized(); }

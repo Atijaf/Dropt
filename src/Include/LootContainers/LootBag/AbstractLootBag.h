@@ -21,21 +21,22 @@ namespace Dropt {
 			bool IsLootBagFinalized() const { return bIsFinalized; }
 			AbstractLootDispatcher* GetSibling() { return Sibling; }
 
+			bool FinalizeLoot() {
+				return GetSibling()->FinalizeLoot();
+			}
+
 		protected:
+
+			virtual bool FinalizeLootBag()
+			{
+				if (GetNumOfLoot() == 0)
+					return false;
+				return true;
+			}
+
 			AbstractLootBag(AbstractLootDispatcher* _Sibling):
 				Sibling(_Sibling)
 			{
-			}
-
-			bool FinalizeLootBag() {
-				if (GetNumOfLoot() == 0)
-					return false;
-				if (IsLootBagFinalized())
-					return true;
-
-				if (FinalizeLootBag_impl())
-					bIsFinalized = true;
-				return bIsFinalized;
 			}
 
 			virtual uint32_t GetNumOfLoot() const = 0;
@@ -49,8 +50,6 @@ namespace Dropt {
 			uint16_t LootArrayIndexOffset = 0;
 
 			bool bIsFinalized = false;
-		private:
-			virtual bool FinalizeLootBag_impl() { return true; }
 		};
 
 		/// <summary>
@@ -226,7 +225,7 @@ namespace Dropt {
 			this->bIsFinalized = false;
 			LootArray.Resize(GetNumOfLoot());
 			this->LootArrayIndexOffset = 0;
-			this->FinalizeLootBag();
+			this->FinalizeLoot();
 		}
 	}
 }

@@ -21,7 +21,7 @@ namespace Dropt {
 
 		protected:
 			virtual bool GrabLoot(std::list<LootType*>& OutLoot) override final;
-			virtual bool FinalizeLootBag_impl() override final;
+			virtual bool FinalizeLootBag() override final;
 			void ResetCounter();
 
 			bool bIsSorted = false;
@@ -29,8 +29,10 @@ namespace Dropt {
 		};
 
 		template<typename LootType, Variance BagVariant>
-		inline bool impl::CoreLootBagImpl<LootType, BagVariant, Variance::Interval>::FinalizeLootBag_impl()
+		inline bool impl::CoreLootBagImpl<LootType, BagVariant, Variance::Interval>::FinalizeLootBag()
 		{
+			if (!AbstractLootBag::FinalizeLootBag()) return false;
+
 			if (!bIsSorted) {
 				this->LootArray.Sort([](CoreLootContainer<LootType, Variance::Interval>* A, CoreLootContainer<LootType, Variance::Interval>* B)
 					{
