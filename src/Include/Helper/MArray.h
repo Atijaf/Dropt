@@ -23,6 +23,10 @@ namespace Dropt {
 			/// <remarks>
 			/// Default sorting of array is least to greatest
 			/// </remarks>
+			
+			MArray() :
+				MArray(10) {}
+
 			MArray(uint32_t InitialSize) :
 				Size(InitialSize),
 				ArrayOfElements(new T[Size]) {};
@@ -62,9 +66,6 @@ namespace Dropt {
 
 			bool NeedsResize() const { return NumOfElements == Size; }
 
-			// Function to compare elements to one another.  Used for sorting array
-			std::function<bool(const T A, const T B)> Func_Sort = [](T A, T B) {return (A < B); };
-
 			uint32_t Size = 1;
 			uint32_t NumOfElements = 0;
 			T* ArrayOfElements = nullptr;
@@ -82,17 +83,24 @@ namespace Dropt {
 		inline bool MArray<T>::Resize(uint32_t NewSize)
 		{
 			if (NewSize == Size) return false;
+
 			if (NewSize > 0) {
 				T* NewContainer = new T[NewSize];
-				for (uint32_t i = 0; i < ((NewSize > NumOfElements) ? NumOfElements : NewSize); ++i)
-					NewContainer[i] = ArrayOfElements[i];
+				if (NewSize < NumOfElements) {
+					for (uint32_t i = 0; i < NewSize; ++i) 
+						NewContainer[i] = ArrayOfElements[i];
+					NumOfElements = NewSize;
+				}
+				else for (uint32_t i = 0; i < NumOfElements; ++i) 
+						NewContainer[i] = ArrayOfElements[i];
+
 				delete[] ArrayOfElements;
 				ArrayOfElements = NewContainer;
 			}
 			else {
 				delete[] ArrayOfElements;
+				NumOfElements = 0;
 			}
-			NumOfElements = NewSize;
 			Size = NewSize;
 			return true;
 		}

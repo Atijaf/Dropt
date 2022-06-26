@@ -28,6 +28,10 @@ namespace Dropt {
 			bool GetLoot(std::list<LootType*>& OutLoot) {
 				return GetSibling()->GetLoot(OutLoot);
 			}
+
+			bool operator == (const CoreElementLoot<LootType, Variant>& Other) const {
+				return (*this->Loot == *Other.Loot);
+			}
 		protected:
 			CoreElementLoot(LootType* _Loot, AbstractLootDispatcher* _Sibling) :
 				AbstractElementLoot(_Sibling),

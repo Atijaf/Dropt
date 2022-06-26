@@ -41,40 +41,43 @@ namespace Dropt {
 		public:
 
 			template<Variance Variant>
-			void AddLoot(BaseLootBag<LootType, Variant>* Loot) {
-				AddLoot(Loot->GetSibling());
+			bool AddLoot(BaseLootBag<LootType, Variant>* Loot) {
+				return AddLoot(Loot->GetSibling());
 			}
 
 			template<Variance Variant>
-			void AddLoot(CoreLootTable<LootType, Variant>* Loot) {
-				AddLoot(Loot->GetSibling());
+			bool AddLoot(CoreLootTable<LootType, Variant>* Loot) {
+				return AddLoot(Loot->GetSibling());
 			}
 
 			template<Variance Variant>
-			void AddLoot(CoreElementLoot<LootType, Variant>* Loot) {
-				AddLoot(Loot->GetSibling());
+			bool AddLoot(CoreElementLoot<LootType, Variant>* Loot) {
+				return AddLoot(Loot->GetSibling());
 			}
 
 			template<Variance Variant>
-			void AddLoot(CoreLootContainer<LootType, Variant>* Loot) {}
+			bool AddLoot(CoreLootContainer<LootType, Variant>* Loot) {}
 
 			template<>
-			void AddLoot(CoreLootContainer<LootType, Variance::Chance>* Loot) {
+			bool AddLoot(CoreLootContainer<LootType, Variance::Chance>* Loot) {
 				if (CanAddLoot(Loot))
-					WeightedLootBag.AddLoot(Loot);
+					return WeightedLootBag.AddLoot(Loot);
+				return false;
 			}
 
 
 			template<>
-			void AddLoot(CoreLootContainer<LootType, Variance::Constant>* Loot) {
+			bool AddLoot(CoreLootContainer<LootType, Variance::Constant>* Loot) {
 				if (CanAddLoot(Loot))
-					ConstantLootBag.AddLoot(Loot);
+					return ConstantLootBag.AddLoot(Loot);
+				return false;
 			}
 
 			template<>
-			void AddLoot(CoreLootContainer<LootType, Variance::Interval>* Loot) {
+			bool AddLoot(CoreLootContainer<LootType, Variance::Interval>* Loot) {
 				if (CanAddLoot(Loot))
-					IntervalLootBag.AddLoot(Loot);
+					return IntervalLootBag.AddLoot(Loot);
+				return false;
 			}
 
 			uint64_t GetTotalLoot() {
@@ -113,9 +116,17 @@ namespace Dropt {
 			}
 
 			bool FinalizeLootTable() {
-				bIsFinalized = (WeightedLootBag.FinalizeLoot() &&
-					IntervalLootBag.FinalizeLoot() &&
-					ConstantLootBag.FinalizeLoot());
+				bool bAtLeastOneBagIsFunctional = false;
+				if (WeightedLootBag.FinalizeLoot())
+					bAtLeastOneBagIsFunctional = true;
+
+				if (IntervalLootBag.FinalizeLoot())
+					bAtLeastOneBagIsFunctional = true;
+
+				if (ConstantLootBag.FinalizeLoot())
+					bAtLeastOneBagIsFunctional = true;
+
+				bIsFinalized = bAtLeastOneBagIsFunctional;
 				return bIsFinalized;
 			}
 

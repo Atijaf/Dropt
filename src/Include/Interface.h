@@ -102,7 +102,7 @@ namespace Dropt {
 
 		template<typename LootType, Variance Variant>
 		CoreLootTable<LootType, Variant>* CreateLootTable(const char* TableName, uint32_t MaxNumObtainable) {
-			CoreLootTable<LootType, Variance::Chance>* OutTable;
+			CoreLootTable<LootType, Variant>* OutTable;
 			if (MaxNumObtainable == (uint32_t)-1) {
 				OutTable = new LootTable<LootType, Variant, Obtainabilities::Common>();
 			}
@@ -138,7 +138,7 @@ namespace Dropt {
 
 		template<typename LootType, Variance Variant>
 		CoreElementLoot<LootType, Variant>* CreateElementLoot(const char* LootName, LootType* _Loot, uint32_t MaxNumObtainable) {
-			CoreElementLoot<LootType, Variance::Chance>* OutElementLoot;
+			CoreElementLoot<LootType, Variant>* OutElementLoot;
 			if (MaxNumObtainable == (uint32_t)-1) {
 				OutElementLoot = new ElementLoot<LootType, Variant, Obtainabilities::Common>(_Loot);
 			}

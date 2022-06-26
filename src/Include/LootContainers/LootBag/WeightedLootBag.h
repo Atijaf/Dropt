@@ -144,7 +144,6 @@ namespace Dropt {
 			uint32_t LootIndex = 0;
 			if (this->GetNumOfLoot() > 1) {
 				uint64_t RandomRoll = this->BagIntDistrib(Dropt::Helper::RandomEngine);
-				std::cout << "Random Roll: " << RandomRoll << "\n";
 				Loot = FindLootFromRandomNumber(RandomRoll, LootIndex);
 			}
 			else {

@@ -36,7 +36,7 @@ namespace Dropt {
 			if (!bIsSorted) {
 				this->LootArray.Sort([](CoreLootContainer<LootType, Variance::Interval>* A, CoreLootContainer<LootType, Variance::Interval>* B)
 					{
-						return(*A > *B);
+						return(A->GetInterval() < B->GetInterval());
 					});
 				bIsSorted = true;
 			}
