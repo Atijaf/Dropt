@@ -98,11 +98,14 @@ namespace Dropt {
 
 	private:
 
-
-
 		template<typename LootType, Variance Variant>
 		CoreLootTable<LootType, Variant>* CreateLootTable(const char* TableName, uint32_t MaxNumObtainable) {
 			CoreLootTable<LootType, Variant>* OutTable;
+
+			// Not allowed to have duplicate names
+			if(FindTable(TableName))
+				return nullptr;
+
 			if (MaxNumObtainable == (uint32_t)-1) {
 				OutTable = new LootTable<LootType, Variant, Obtainabilities::Common>();
 			}
@@ -121,6 +124,11 @@ namespace Dropt {
 		template<typename LootType, Variance BagVariant, Variance ContentVariant>
 		CoreLootBag<LootType, BagVariant, ContentVariant>* CreateLootBag(const char* BagName, uint32_t MaxNumObtainable) {
 			CoreLootBag<LootType,BagVariant,ContentVariant>* OutBag;
+
+			// Not allowed to have duplicate names
+			if (FindBag(BagName))
+				return nullptr;
+
 			if (MaxNumObtainable == (uint32_t)-1) {
 				OutBag = new LootBag<LootType, BagVariant, Obtainabilities::Common, ContentVariant>();
 			}
@@ -139,6 +147,12 @@ namespace Dropt {
 		template<typename LootType, Variance Variant>
 		CoreElementLoot<LootType, Variant>* CreateElementLoot(const char* LootName, LootType* _Loot, uint32_t MaxNumObtainable) {
 			CoreElementLoot<LootType, Variant>* OutElementLoot;
+
+			// Not allowed to have duplicate names
+			if (FindElementLoot(LootName))
+				return nullptr;
+			
+
 			if (MaxNumObtainable == (uint32_t)-1) {
 				OutElementLoot = new ElementLoot<LootType, Variant, Obtainabilities::Common>(_Loot);
 			}
@@ -155,20 +169,45 @@ namespace Dropt {
 		}
 
 		bool AddToMemoryContainer(const char* DataName, AbstractLootTable* Data) {
-			TableMemoryContainer.insert(std::pair<const char*, AbstractLootTable*>(DataName, Data));
+			TableMemoryContainer[DataName] = Data;
 			return true;
 		}
 		bool AddToMemoryContainer(const char* DataName, AbstractLootBag* Data) {
-			BagMemoryContainer.insert(std::pair<const char*, AbstractLootBag*>(DataName, Data));
+			BagMemoryContainer[DataName] = Data;
 			return true;
 		}
 		bool AddToMemoryContainer(const char* DataName, AbstractElementLoot* Data) {
-			LootMemoryContainer.insert(std::pair<const char*, AbstractElementLoot*>(DataName, Data));
+			LootMemoryContainer[DataName] = Data;
 			return true;
 		}
-		std::unordered_multimap<std::string, AbstractLootTable*> TableMemoryContainer;
-		std::unordered_multimap<std::string, AbstractLootBag*> BagMemoryContainer;
-		std::unordered_multimap<std::string, AbstractElementLoot*> LootMemoryContainer;
+
+		std::unordered_map<std::string, AbstractLootTable*> TableMemoryContainer;
+		std::unordered_map<std::string, AbstractLootBag*> BagMemoryContainer;
+		std::unordered_map<std::string, AbstractElementLoot*> LootMemoryContainer;
+
+	public:
+
+		AbstractLootTable* FindTable(const char* TableName) {
+			AbstractLootTable* FoundTable = nullptr;
+			
+			if (TableMemoryContainer.contains(TableName))
+				FoundTable = TableMemoryContainer.find(TableName)->second;
+			return FoundTable;
+		}
+
+		AbstractLootBag* FindBag(const char* TableName) {
+			AbstractLootBag* FoundBag = nullptr;
+			if (BagMemoryContainer.contains(TableName))
+				FoundBag = BagMemoryContainer.find(TableName)->second;
+			return FoundBag;
+		}
+
+		AbstractElementLoot* FindElementLoot(const char* TableName) {
+			AbstractElementLoot* FoundLoot = nullptr;
+			if (LootMemoryContainer.contains(TableName))
+				FoundLoot = LootMemoryContainer.find(TableName)->second;
+			return FoundLoot;
+		}
 
 	};
 }

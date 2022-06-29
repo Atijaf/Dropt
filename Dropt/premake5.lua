@@ -28,7 +28,7 @@ project "Dropt"
 	}
 
 	filter "system:windows"
-		cppdialect "c++17"
+		cppdialect "c++20"
 		staticruntime "On"
 		systemversion "latest"
 

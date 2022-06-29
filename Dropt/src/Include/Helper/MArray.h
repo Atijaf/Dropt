@@ -35,7 +35,7 @@ namespace Dropt {
 				Size(OG.GetSize()),
 				ArrayOfElements(new T[Size]) 
 			{
-				for (int i = 0; i < Size; ++i)
+				for (uint32_t i = 0; i < Size; ++i)
 					ArrayOfElements[i] = OG.ArrayOfElements[i];
 			}
 			~MArray();

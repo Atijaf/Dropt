@@ -105,6 +105,7 @@
     <ClInclude Include="src\Include\LootContainers\LootBag\WeightedLootBag.h" />
     <ClInclude Include="src\Include\LootContainers\LootTable\AbstractLootTable.h" />
     <ClInclude Include="src\Include\LootContainers\LootTable\LootTable.h" />
+    <ClInclude Include="src\Include\LootContainers\Node.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Impl\Dispatch.cpp" />

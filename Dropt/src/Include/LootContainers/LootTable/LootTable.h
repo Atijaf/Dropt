@@ -9,16 +9,17 @@ namespace Dropt {
 		{
 		public:
 			LootTable():
-				CoreLootTable<LootType, Variant>(this)
-			{
+				CoreLootTable<LootType, Variant>(this){}
+			LootTable(const LootTable& B);
 
-			}
 			using CoreLoot<LootType, Variant, Obtainability>::GetLoot;	// Ambiguous solution
 			bool FinalizeLoot() override final { 
 				if (this->FinalizeLootTable())
 					this->bIsFinalized;
 				return this->bIsFinalized; 
 			}
+
+
 		protected:
 			bool GetLoot_Impl(std::list<LootType*>& OutLoot) override {
 				return this->RollForLoot(OutLoot);
@@ -26,5 +27,13 @@ namespace Dropt {
 
 			virtual bool IsFinalized() const override { return this->IsLootTableFinalized(); }
 		};
+
+
+		template<typename LootType, Variance Variant, Obtainabilities Obtainability>
+		inline Dropt::impl::LootTable<LootType, Variant, Obtainability>::LootTable(const LootTable& B)
+		{
+
+		}
+
 	}
 }

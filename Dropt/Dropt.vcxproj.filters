@@ -70,6 +70,7 @@
       <Filter>Include\LootTable</Filter>
     </ClInclude>
     <ClInclude Include="src\Include\Interface.h" />
+    <ClInclude Include="src\Include\LootContainers\Node.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Impl\Dispatch.cpp">

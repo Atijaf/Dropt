@@ -3,6 +3,7 @@
 #include "../../Helper/MArray.h"
 #include "../../Helper/Globals.h"
 #include "../../Core/CoreLoot.h"
+#include "../Node.h"
 #include <random>
 
 namespace Dropt {
@@ -18,6 +19,9 @@ namespace Dropt {
 
 		class AbstractLootBag {
 		public:
+
+			virtual ~AbstractLootBag() {};
+
 			bool IsLootBagFinalized() const { return bIsFinalized; }
 			AbstractLootDispatcher* GetSibling() { return Sibling; }
 
@@ -60,6 +64,7 @@ namespace Dropt {
 		class AbstractBaseLootBag : public AbstractLootBag
 		{
 		public:
+			virtual ~AbstractBaseLootBag() {};
 			// Updates OutLoot and returns true if Loot is Obtained
 			bool GetLoot(std::list<LootType*>& OutLoot) { return GetSibling()->GetLoot(OutLoot); }
 		protected:
@@ -80,6 +85,7 @@ namespace Dropt {
 		class BaseLootBag : public AbstractBaseLootBag<LootType>
 		{
 		public:
+			virtual ~BaseLootBag() {};
 			CoreLootContainer<LootType, Variant>* GetSibling() {
 				return static_cast<CoreLootContainer<LootType, Variant>*>(this->Sibling);
 			}
@@ -97,6 +103,12 @@ namespace Dropt {
 		class CoreLootBag : public BaseLootBag<LootType, BagVariant>
 		{
 		public:
+
+			virtual ~CoreLootBag() {
+				for (uint32_t i = 0; i < LootArray.GetNumOfElements(); ++i)
+					delete LootArray[i];
+			}
+
 			bool AddLoot(CoreLootContainer<LootType, ContentVariant>* Loot);
 			bool AddLoot(BaseLootBag<LootType, ContentVariant>* Loot);
 			bool AddLoot(CoreLootTable<LootType, ContentVariant>* Loot);
@@ -114,7 +126,7 @@ namespace Dropt {
 			CoreLootContainer<LootType, BagVariant>* GetSibling() {
 				return static_cast<CoreLootContainer<LootType, BagVariant>*>(this->Sibling);
 			}
-			
+		
 		protected:
 			/// <summary>
 			/// Initializes a LootBag
@@ -131,12 +143,10 @@ namespace Dropt {
 			{
 			};
 
-			virtual ~CoreLootBag() {};
-
 			virtual void RemoveIndexFromArray(const uint32_t Index) override;
 			virtual void TrimArray() override;
 
-			Dropt::Helper::MArray<CoreLootContainer<LootType, ContentVariant>*> LootArray;
+			Dropt::Helper::MArray<Node<LootType, ContentVariant>*> LootArray;
 		};
 
 
@@ -166,7 +176,12 @@ namespace Dropt {
 				if (!Loot->FinalizeLoot())
 					return false;
 			}
-			return LootArray.AddElement(Loot);
+
+			Node<LootType, ContentVariant>* NewNode = new Node<LootType, ContentVariant>(*Loot);
+			if (LootArray.AddElement(NewNode))
+				return true;
+			delete NewNode;
+			return false;
 		}
 
 		template<typename LootType, Variance BagVariant, Variance ContentVariant>

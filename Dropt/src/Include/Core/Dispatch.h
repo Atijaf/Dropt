@@ -25,7 +25,7 @@ namespace Dropt {
 			virtual constexpr Obtainabilities GetObtainability() const = 0;
 			virtual constexpr Variance GetVariant() const = 0;
 
-		private:
+		protected:
 
 			// Returns true if we should remove this object from the container it is stored in.
 			// Is called form a static parent method

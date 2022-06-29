@@ -1,6 +1,9 @@
 #include "../Include/Core/Dispatch.h"
+#include "../Include/Interface.h"
 
-namespace impl
-{
+namespace Dropt {
+	namespace impl
+	{
 
+	}
 }

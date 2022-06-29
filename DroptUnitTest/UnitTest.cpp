@@ -13,7 +13,8 @@
         } \
     } while (false)
 #else
-#   define ASSERT(condition, message) do { } while (false)
+#	define ASSERT(condition, message) {}
+
 #endif
 
 namespace Dropt
@@ -188,6 +189,7 @@ namespace Dropt
 		static void TortureTest()
 		{
 			std::uniform_int_distribution<uint32_t> WeightRandIntDistrib(1,1593153210);
+			std::uniform_int_distribution<uint32_t> ObtainabileDistrib(1, 1000);
 			std::uniform_int_distribution<uint32_t> IntervalRandIntDistrib(10,1000);
 			std::uniform_int_distribution<uint32_t> RandLootIndexDistrib(0, 10000-1);
 
@@ -214,14 +216,16 @@ namespace Dropt
 			Armor* IntervalLoot[10000];
 			for (uint32_t i = 0; i < 10000; ++i) {
 				uint32_t RandWeight = WeightRandIntDistrib(RandomEngine);
+				uint32_t RandWeightObtain = ObtainabileDistrib(RandomEngine);
 				const char* WeightedLootName = ("Weighted Loot ");
 				WeightedLoot[i] = new Armor(WeightedLootName);
-				WeightedLoots[i] = Inter.CreateElementLoot_Weighted<Armor>(WeightedLootName, WeightedLoot[i], RandWeight);
+				WeightedLoots[i] = Inter.CreateElementLoot_Weighted<Armor>(WeightedLootName, WeightedLoot[i], RandWeight, RandWeightObtain);
 
 				uint32_t RandInterval = IntervalRandIntDistrib(RandomEngine);
+				uint32_t RandIntervalObtain = ObtainabileDistrib(RandomEngine);
 				const char* IntervalLootName = ("Interval Loot ");
 				IntervalLoot[i] = new Armor(IntervalLootName);
-				IntervalLoots[i] = Inter.CreateElementLoot_Interval<Armor>(IntervalLootName, IntervalLoot[i], RandInterval);
+				IntervalLoots[i] = Inter.CreateElementLoot_Interval<Armor>(IntervalLootName, IntervalLoot[i], RandInterval, RandIntervalObtain);
 			}
 
 			for (uint32_t i = 0; i < 1000000; ++i)
@@ -237,10 +241,10 @@ namespace Dropt
 					return;
 			}
 			for (uint32_t i = 0; i < 50; ++i) {
-				WeightedVariableTables[i]->FinalizeLoot();
-				IntervalVariableTables[i]->FinalizeLoot();
+				//WeightedVariableTables[i]->FinalizeLoot();
+				//IntervalVariableTables[i]->FinalizeLoot();
 				ConstantTable->AddLoot(WeightedVariableTables[i]);
-				//ConstantTable->AddLoot(IntervalVariableTables[i]);
+				ConstantTable->AddLoot(IntervalVariableTables[i]);
 			}
 			ConstantTable->FinalizeLoot();
 
@@ -256,7 +260,49 @@ namespace Dropt
 				delete WeightedLoot[i];
 				delete IntervalLoot[i];
 			}
+		}
 
+		
+		static void TestMemory()
+		{
+			// Note, these are not examples.  This is adding the same loot from other tables into other tables
+			// One instance of loot should only ever be added into one LootTable / Bag
+			Armor Loot("The Loot");
+			for (uint32_t i = 0; i < 100000000; ++i){
+				Dropt::Interface* inter = new Dropt::Interface();
+				auto WeightedLoot = inter->CreateElementLoot_Weighted<Armor>("Weighted Loot", &Loot, 10);
+				auto IntervalLoot = inter->CreateElementLoot_Interval<Armor>("Interval Loot", &Loot, 10);
+				auto ConstantLoot = inter->CreateElementLoot_Constant<Armor>("Constant Loot", &Loot);
+				
+				auto WeightedBag = inter->CreateBag_Weighted<Armor, Variance::Chance>("Weighted Bag", 10);
+				auto IntervalBag = inter->CreateBag_Interval<Armor, Variance::Interval>("Interval Bag", 10);
+				auto ConstantBag = inter->CreateBag_Constant<Armor, Variance::Constant>("Constant Bag");
+
+				auto WeightedDropTable = inter->CreateLootTable_Weighted<Armor>("Weighted Drop Table", 100);
+				auto IntervalDropTable = inter->CreateLootTable_Interval<Armor>("Interval Drop Table", 100);
+				auto ConstantDropTable = inter->CreateLootTable_Constant<Armor>("Constant Drop Table");
+
+				WeightedBag->AddLoot(WeightedLoot);
+				IntervalBag->AddLoot(IntervalLoot);
+				ConstantBag->AddLoot(ConstantLoot);
+
+				WeightedDropTable->AddLoot(WeightedBag);
+				IntervalDropTable->AddLoot(WeightedBag);
+				ConstantDropTable->AddLoot(WeightedBag);
+
+				WeightedDropTable->AddLoot(IntervalBag);
+				IntervalDropTable->AddLoot(IntervalBag);
+				ConstantDropTable->AddLoot(IntervalBag);
+
+				WeightedDropTable->AddLoot(ConstantBag);
+				IntervalDropTable->AddLoot(ConstantBag);
+				ConstantDropTable->AddLoot(ConstantBag);
+
+				std::list<Armor*> ObtainedLoot;
+				WeightedDropTable->GetLoot(ObtainedLoot);
+
+				delete inter;
+			}
 		}
 	}
 }
@@ -271,7 +317,6 @@ namespace Dropt
 *	- Sorted
 *	- Offsets calculated
 *	- Obtained correctly
-*	* Need largely separted intervals tested
 *
 * - Variable Obtainability
 *	- Tested in Interval Bag
@@ -280,14 +325,26 @@ namespace Dropt
 * 
 * - Empty Bag
 *	- Tested in Interval Bag
+*
+* - Stress Test
+*	- Largely separated Intervals
+*	- Large weights
+*	- Random obtainabilities
+*	* Results
+*		- Debug:    174  Seconds
+*		- Release:	19.5 Seconds
 */
 
 int main() {
 	using namespace Dropt::UnitTest;
-	TestWeightedBag();
-	TestIntervalBag();
-	TortureTest();
 
+	
+	//TestWeightedBag();
+	//TestIntervalBag();
+	TortureTest();
+	
+
+	//TestMemory();
 
 	return 0;
 }

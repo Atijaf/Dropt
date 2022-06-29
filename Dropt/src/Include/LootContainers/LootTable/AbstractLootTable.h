@@ -13,6 +13,7 @@ namespace Dropt {
 		class AbstractLootTable
 		{
 		public:
+			virtual ~AbstractLootTable() {};
 			bool IsLootTableFinalized() const { return bIsFinalized; }
 			AbstractLootDispatcher* GetSibling() { return Sibling; }
 			bool FinalizeLoot() {
@@ -39,6 +40,7 @@ namespace Dropt {
 		class BaseLootTable : public AbstractLootTable
 		{
 		public:
+			virtual ~BaseLootTable() {};
 
 			template<Variance Variant>
 			bool AddLoot(BaseLootBag<LootType, Variant>* Loot) {
@@ -166,12 +168,10 @@ namespace Dropt {
 		public:
 			CoreLootContainer<LootType, Variant>* GetSibling() { 
 				return static_cast<CoreLootContainer<LootType,Variant>*>(this->Sibling); }
+
 		protected:
 			CoreLootTable(AbstractLootDispatcher* _Sibling) :
-				BaseLootTable<LootType>(_Sibling) 
-			{
-
-			}
+				BaseLootTable<LootType>(_Sibling) {}
 
 
 		};

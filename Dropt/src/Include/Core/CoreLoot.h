@@ -21,8 +21,14 @@ namespace Dropt {
 		class CoreLootContainer : public AbstractCoreLoot<LootType>, public LootDispatchVariance<Variant>
 		{
 		public:
+			template<typename LootType, Variance Variant>
+			friend class BaseNode;
 			constexpr Variance GetVariant() const override { return Variant; }
 		protected:
+			//virtual bool ShouldRemoveFromContainer() const = 0;
+			//virtual bool GetLoot(std::list<LootType*>& OutLoot) = 0;
+			//virtual bool FinalizeLoot() = 0;
+			//virtual bool IsFinalized() const = 0;
 		};
 
 
