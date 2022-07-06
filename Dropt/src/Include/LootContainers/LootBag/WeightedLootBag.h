@@ -1,5 +1,5 @@
 #pragma once
-#include "AbstractLootBag.h"
+#include "LootBag.h"
 #include <functional>
 
 namespace Dropt {
@@ -13,8 +13,8 @@ namespace Dropt {
 		class CoreLootBagImpl<LootType, BagVariant, Variance::Chance> : public CoreLootBag<LootType, BagVariant, Variance::Chance>
 		{
 		public:
-			CoreLootBagImpl(uint32_t InitialSize, AbstractLootDispatcher* _Sibling) :	// Initialization list
-				CoreLootBag<LootType,BagVariant,Variance::Chance>(InitialSize, _Sibling)
+			CoreLootBagImpl(uint32_t InitialSize, AbstractLootDispatcher* _Sister) :	// Initialization list
+				CoreLootBag<LootType,BagVariant,Variance::Chance>(InitialSize, _Sister)
 			{}
 
 		protected:
@@ -24,7 +24,7 @@ namespace Dropt {
 			virtual void RemoveIndexFromArray(const uint32_t Index) override;
 
 			// Performs final actions, required to allow this bag to be grabbed from
-			virtual bool FinalizeLootBag() override;
+			virtual bool PrepareLootToBeObtained() override;
 			// Finds GCF amongs all elements weights (5,10,15: GCF is 5)
 			uint32_t FindGCFOfWeights() const;
 			// Reduces all elements weights based on GCF(5,10,15: GCF is 5 : 1,2,3)
@@ -38,15 +38,14 @@ namespace Dropt {
 			// Returns Loot, along with it's index, 
 			CoreLootContainer<LootType, Variance::Chance>* FindLootFromRandomNumber(uint64_t RandomNumber, uint32_t& OutLootIndex);
 			bool bIsSorted = false;
-			// Offset Size by this amount
-			uint16_t LootArrayIndexOffset = 0;
+			std::uniform_int_distribution<uint64_t> BagIntDistrib;
 		};
 
 
 		template<typename LootType, Variance BagVariant>
-		inline bool impl::CoreLootBagImpl<LootType, BagVariant, Variance::Chance>::FinalizeLootBag()
+		inline bool impl::CoreLootBagImpl<LootType, BagVariant, Variance::Chance>::PrepareLootToBeObtained()
 		{
-			if (!AbstractLootBag::FinalizeLootBag()) return false;
+			if (!AbstractLootBag::PrepareLootToBeObtained()) return false;
 			// Find GCF of all weights in LootArray and reduce the weights based off that;
 			ReduceToGCF();
 
@@ -139,29 +138,34 @@ namespace Dropt {
 
 		template<typename LootType, Variance BagVariant>
 		inline bool CoreLootBagImpl<LootType, BagVariant, Variance::Chance>::GrabLoot(std::list<LootType*>& OutLoot) {
-			bool bReturnFlag = true;
-			CoreLootContainer<LootType, Variance::Chance>* Loot = nullptr;
-			uint32_t LootIndex = 0;
-			if (this->GetNumOfLoot() > 1) {
+			bool bFoundLoot = false;
+
+			bool bGettingLoot = true;
+			while (bGettingLoot && this->GetNumOfLoot() > 0) {
+				CoreLootContainer<LootType, Variance::Chance>* Loot = nullptr;
+				uint32_t LootIndex = 0;
 				uint64_t RandomRoll = this->BagIntDistrib(Dropt::Helper::RandomEngine);
 				Loot = FindLootFromRandomNumber(RandomRoll, LootIndex);
+				
+				if (!Loot->GetLoot(OutLoot))
+					RemoveIndexFromArray(LootIndex);
+				else {
+					if (AbstractLootDispatcher::ShouldRemoveFromContainer(Loot))
+						RemoveIndexFromArray(LootIndex);
+					bFoundLoot = true;
+					bGettingLoot = false;
+				}
 			}
-			else {
-				Loot = this->LootArray[0];
-			}
-			if (!Loot->GetLoot(OutLoot))
-				bReturnFlag = false;// Debug.  This shouldn't ever happen, but if it does, investigate
-									// Might happen if this function is called on a loot bag that has no contents
-			if (AbstractLootDispatcher::ShouldRemoveFromContainer(Loot))
-				RemoveIndexFromArray(LootIndex);
-
-			return bReturnFlag;
+			return bFoundLoot;
 		}
 
 		template<typename LootType, Variance BagVariant>
 		inline CoreLootContainer<LootType, Variance::Chance>* impl::CoreLootBagImpl<LootType, BagVariant, Variance::Chance>::
 			FindLootFromRandomNumber(uint64_t RandomNumber, uint32_t& OutLootIndex)
 		{
+			if (this->GetNumOfLoot() == 1)
+				return this->LootArray[0];
+
 			//Indexes:	 0,  1,  2, 3, 4
 			//			65, 35, 20, 5, 1
 			// Random Number: 2

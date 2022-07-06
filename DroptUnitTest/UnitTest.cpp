@@ -55,10 +55,10 @@ namespace Dropt
 
 			MArray<CoreElementLoot<Armor, Variance::Chance>*> Out(4);
 
-			Out[0] = Inter.CreateElementLoot_Weighted(HeadArmorTmp->Name, HeadArmorTmp, 2198889, 11);
-			Out[1] = Inter.CreateElementLoot_Weighted(TorsoArmorTmp->Name, TorsoArmorTmp, 3490300, 31);
-			Out[2] = Inter.CreateElementLoot_Weighted(LegArmorTmp->Name, LegArmorTmp, 438900, 17);
-			Out[3] = Inter.CreateElementLoot_Weighted(FeetArmorTmp->Name, FeetArmorTmp, 1052100, 25);
+			Out[0] = Inter.CreateElementLoot_Weighted(HeadArmorTmp->Name, HeadArmorTmp, 2198800, 11);
+			Out[1] = Inter.CreateElementLoot_Weighted(TorsoArmorTmp->Name, TorsoArmorTmp, 1385244, 31);
+			Out[2] = Inter.CreateElementLoot_Weighted(LegArmorTmp->Name, LegArmorTmp, 11015988, 17);
+			Out[3] = Inter.CreateElementLoot_Weighted(FeetArmorTmp->Name, FeetArmorTmp, 4595492, 25);
 			
 			return Out;
 
@@ -157,7 +157,7 @@ namespace Dropt
 			}
 
 			RollCounter = 1;
-			while (ConstantBagWithIntervalArmor->IsLootBagFinalized()) {
+			while (ConstantBagWithIntervalArmor->GetNumOfLoot() > 0) {
 				std::list<Armor*> LootObtained;
 				ConstantBagWithIntervalArmor->GetLoot(LootObtained);
 
@@ -341,7 +341,7 @@ int main() {
 	
 	//TestWeightedBag();
 	//TestIntervalBag();
-	TortureTest();
+	//TortureTest();
 	
 
 	//TestMemory();

@@ -26,7 +26,8 @@ namespace Dropt {
 		CoreLootTable<LootType, Variance::Chance>* CreateLootTable_Weighted(const char* TableName, uint32_t Weight, uint32_t MaxNumObtainable = -1)
 		{
 			auto OutTable = CreateLootTable<LootType, Variance::Chance>(TableName, MaxNumObtainable);
-			OutTable->GetSibling()->SetWeight(Weight);
+			if(OutTable)
+				OutTable->GetSister()->SetWeight(Weight);
 			return OutTable;
 		}
 
@@ -34,7 +35,8 @@ namespace Dropt {
 		CoreLootBag<LootType, Variance::Chance, ContentVariant>* CreateBag_Weighted(const char* BagName, uint32_t BagWeight, uint32_t MaxNumObtainable = -1)
 		{
 			auto OutBag = CreateLootBag<LootType, Variance::Chance, ContentVariant>(BagName, MaxNumObtainable);
-			OutBag->GetSibling()->SetWeight(BagWeight);
+			if(OutBag)
+				OutBag->GetSister()->SetWeight(BagWeight);
 			return OutBag;
 		}
 
@@ -42,7 +44,8 @@ namespace Dropt {
 		CoreElementLoot<LootType, Variance::Chance>* CreateElementLoot_Weighted(const char* LootName, LootType* Loot, uint32_t LootWeight, uint32_t MaxNumObtainable = -1)
 		{
 			auto OutLoot = CreateElementLoot<LootType, Variance::Chance>(LootName, Loot, MaxNumObtainable);
-			OutLoot->GetSibling()->SetWeight(LootWeight);
+			if(OutLoot)
+				OutLoot->GetSister()->SetWeight(LootWeight);
 			return OutLoot;
 		}
 
@@ -54,7 +57,8 @@ namespace Dropt {
 		CoreLootTable<LootType, Variance::Interval>* CreateLootTable_Interval(const char* TableName, uint32_t Interval, uint32_t MaxNumObtainable = -1)
 		{
 			auto OutTable = CreateLootTable<LootType, Variance::Interval>(TableName, MaxNumObtainable);
-			OutTable->GetSibling()->SetInterval(Interval);
+			if (OutTable)
+				OutTable->GetSister()->SetInterval(Interval);
 			return OutTable;
 		}
 
@@ -62,7 +66,8 @@ namespace Dropt {
 		CoreLootBag<LootType, Variance::Interval, ContentVariant>* CreateBag_Interval(const char* BagName, uint32_t BagInterval, uint32_t MaxNumObtainable = -1)
 		{
 			auto OutBag = CreateLootBag<LootType, Variance::Interval, ContentVariant>(BagName, MaxNumObtainable);
-			OutBag->GetSibling()->SetInterval(BagInterval);
+			if(OutBag)
+				OutBag->GetSister()->SetInterval(BagInterval);
 			return OutBag;
 		}
 
@@ -70,7 +75,8 @@ namespace Dropt {
 		CoreElementLoot<LootType, Variance::Interval>* CreateElementLoot_Interval(const char* LootName, LootType* Loot, uint32_t LootInterval, uint32_t MaxNumObtainable = -1)
 		{
 			auto OutLoot = CreateElementLoot<LootType, Variance::Interval>(LootName, Loot, MaxNumObtainable);
-			OutLoot->GetSibling()->SetInterval(LootInterval);
+			if (OutLoot)
+				OutLoot->GetSister()->SetInterval(LootInterval);
 			return OutLoot;
 		}
 

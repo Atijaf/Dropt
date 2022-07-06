@@ -1,15 +1,25 @@
 #pragma once
 #include "LootDispatcherDefinition.h"
 #include "LootObtainabilityController.h"
+#include "Dispatch.h"
+#include <list>
 
 namespace Dropt {
 	namespace impl
 	{
 
+		//Forward Declaration
+		template <typename LootType, Variance Variant>
+		class BaseNode;
+
+
 		template<typename LootType>
 		class AbstractCoreLoot : public AbstractLootDispatcher {
 		public:
 			virtual bool GetLoot(std::list<LootType*>& OutLoot) = 0;
+		protected:
+			AbstractCoreLoot(AbstractHandler* _Brother) :
+				AbstractLootDispatcher(_Brother) {}
 		};
 
 		/// <summary>
@@ -24,7 +34,10 @@ namespace Dropt {
 			template<typename LootType, Variance Variant>
 			friend class BaseNode;
 			constexpr Variance GetVariant() const override { return Variant; }
+
 		protected:
+			CoreLootContainer(AbstractHandler* _Brother) :
+				AbstractCoreLoot<LootType>(_Brother) {}
 			//virtual bool ShouldRemoveFromContainer() const = 0;
 			//virtual bool GetLoot(std::list<LootType*>& OutLoot) = 0;
 			//virtual bool FinalizeLoot() = 0;
@@ -49,12 +62,16 @@ namespace Dropt {
 			}
 			constexpr Obtainabilities GetObtainability() const override { return Obtainability; }
 
+		protected:
+			CoreLoot(AbstractHandler* _Brother) :
+				CoreLootContainer<LootType, Variant>(_Brother) {}
 		private:
 
 			virtual bool GetLoot_Impl(std::list<LootType*>& OutLoot) = 0;
 			bool ShouldRemoveFromContainer() const override {
 				return LootObtainabilityController<Obtainability>::ShouldRemoveFromContainer();
 			}
+
 		};
 	}
 }

@@ -1,6 +1,7 @@
 #pragma once
 #include "../Core/Dispatch.h"
 #include "../Core/CoreLoot.h"
+#include "../LootContainers/Handler/AbstractHandler.h"
 
 //debug
 #include <iostream>
@@ -10,31 +11,31 @@ namespace Dropt {
 	{
 
 
-		class AbstractElementLoot {
+		class AbstractElementLoot : public AbstractHandler{
 		public:
-			AbstractLootDispatcher* GetSibling() const { return Sibling; }
+			bool CanLootBeObtained() const override final { return true; }
+			bool PrepareLootToBeObtained() override final { return true; }
 		protected:
-			AbstractElementLoot(AbstractLootDispatcher* _Sibling) :
-				Sibling(_Sibling) {};
-			AbstractLootDispatcher* Sibling;
+			AbstractElementLoot(AbstractLootDispatcher* _Sister) :
+				AbstractHandler(_Sister) {};
 		};
 
 		template<typename LootType, Variance Variant>
 		class CoreElementLoot : public AbstractElementLoot{
 		public:
-			CoreLootContainer<LootType, Variant>* GetSibling() const {
-				return static_cast<CoreLootContainer<LootType, Variant>*>(this->Sibling);
+			CoreLootContainer<LootType, Variant>* GetSister() const {
+				return static_cast<CoreLootContainer<LootType, Variant>*>(this->Sister);
 			}
 			bool GetLoot(std::list<LootType*>& OutLoot) {
-				return GetSibling()->GetLoot(OutLoot);
+				return GetSister()->GetLoot(OutLoot);
 			}
 
 			bool operator == (const CoreElementLoot<LootType, Variant>& Other) const {
 				return (*this->Loot == *Other.Loot);
 			}
 		protected:
-			CoreElementLoot(LootType* _Loot, AbstractLootDispatcher* _Sibling) :
-				AbstractElementLoot(_Sibling),
+			CoreElementLoot(LootType* _Loot, AbstractLootDispatcher* _Sister) :
+				AbstractElementLoot(_Sister),
 				Loot(_Loot) {};
 			LootType* Loot;
 		};
@@ -49,12 +50,14 @@ namespace Dropt {
 		class ElementLoot : public CoreElementLoot<LootType, Variant>, public CoreLoot<LootType, Variant, Obtainability>
 		{
 		public:
-			ElementLoot(LootType* _Loot) : 
+			ElementLoot(LootType* _Loot) :
+				CoreLoot<LootType, Variant, Obtainability>(this),
 				CoreElementLoot<LootType, Variant>(_Loot, this) {};
+
 			bool FinalizeLoot() override final { return true; }
 
-			CoreLoot<LootType, Variant, Obtainability>* GetSibling() const {
-				return static_cast<CoreLoot<LootType, Variant, Obtainability>*>(this->Sibling);
+			CoreLoot<LootType, Variant, Obtainability>* GetSister() const {
+				return static_cast<CoreLoot<LootType, Variant, Obtainability>*>(this->Sister);
 			}
 
 			using CoreLoot<LootType, Variant, Obtainability>::GetLoot;

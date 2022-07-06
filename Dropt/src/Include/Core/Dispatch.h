@@ -8,7 +8,7 @@
 namespace Dropt {
 	namespace impl
 	{
-
+		class AbstractHandler;
 		// Core class of all objects using the magic of OOP
 		class AbstractLootDispatcher
 		{
@@ -25,7 +25,13 @@ namespace Dropt {
 			virtual constexpr Obtainabilities GetObtainability() const = 0;
 			virtual constexpr Variance GetVariant() const = 0;
 
+			AbstractHandler* GetBrother() const { return Brother; }
+
 		protected:
+			AbstractLootDispatcher(AbstractHandler* _Brother) :
+				Brother(_Brother) {}
+
+			AbstractHandler* Brother;
 
 			// Returns true if we should remove this object from the container it is stored in.
 			// Is called form a static parent method

@@ -51,7 +51,7 @@ int main()
 		Table->AddLoot(HelmetLoot);
 		Table->AddLoot(LegLoot);
 		Table->AddLoot(GloveLoot);
-		Table->GetSibling()->FinalizeLoot();
+		Table->GetSister()->FinalizeLoot();
 
 		std::list<Armor*> OutLoot;
 		for (int i = 0; i < 40; ++i) {

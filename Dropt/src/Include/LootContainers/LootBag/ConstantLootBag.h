@@ -1,6 +1,7 @@
 #pragma once
 
-#include "AbstractLootBag.h"
+#include "LootBag.h"
+
 namespace Dropt {
 	namespace impl
 	{
@@ -12,8 +13,8 @@ namespace Dropt {
 		class CoreLootBagImpl<LootType, BagVariant, Variance::Constant> : public CoreLootBag<LootType, BagVariant, Variance::Constant>
 		{
 		public:
-			CoreLootBagImpl(uint32_t InitialSize, AbstractLootDispatcher* _Sibling) :
-				CoreLootBag<LootType, BagVariant,Variance::Constant>(InitialSize,_Sibling)
+			CoreLootBagImpl(uint32_t InitialSize, AbstractLootDispatcher* _Sister) :
+				CoreLootBag<LootType, BagVariant,Variance::Constant>(InitialSize,_Sister)
 			{
 
 			};
@@ -28,23 +29,19 @@ namespace Dropt {
 
 
 		template<typename LootType, Variance BagVariant>
-		inline bool CoreLootBagImpl<LootType, BagVariant, Variance::Constant>::GrabLoot(std::list<LootType*>& OutLoot) {
-
-			bool bReturnFlag = true;
+		inline bool CoreLootBagImpl<LootType, BagVariant, Variance::Constant>::GrabLoot(std::list<LootType*>& OutLoot) 
+		{
+			bool bFoundLoot = false;
 			if (this->GetNumOfLoot() > 0) {
 				CoreLootContainer<LootType, Variance::Constant>* Loot = nullptr;
 				for (uint32_t i = 0; i < this->GetNumOfLoot(); ++i) {
-					Loot = this->LootArray[i];
-					// Debug.  This shouldn't ever happen, but if it does, investigate
-					// Might happen if this function is called on a loot bag that has no contents
-					if (!Loot->GetLoot(OutLoot))
-						bReturnFlag = false;
+					if (this->LootArray[i]->GetLoot(OutLoot))
+						bFoundLoot = true;
 				}
 				// Remove Elements from LootArray that should be removed
 				EliminateRemovableIndexes();
-				return true;
 			}
-			return false;
+			return bFoundLoot;
 		}
 
 		template<typename LootType, Variance BagVariant>

@@ -48,9 +48,6 @@
     <ClInclude Include="src\Include\Helper\MArray.h">
       <Filter>Include\Helper</Filter>
     </ClInclude>
-    <ClInclude Include="src\Include\LootContainers\LootBag\AbstractLootBag.h">
-      <Filter>Include\LootBag</Filter>
-    </ClInclude>
     <ClInclude Include="src\Include\LootContainers\LootBag\ConstantLootBag.h">
       <Filter>Include\LootBag</Filter>
     </ClInclude>
@@ -63,14 +60,12 @@
     <ClInclude Include="src\Include\LootContainers\LootBag\WeightedLootBag.h">
       <Filter>Include\LootBag</Filter>
     </ClInclude>
-    <ClInclude Include="src\Include\LootContainers\LootTable\AbstractLootTable.h">
-      <Filter>Include\LootTable</Filter>
-    </ClInclude>
     <ClInclude Include="src\Include\LootContainers\LootTable\LootTable.h">
       <Filter>Include\LootTable</Filter>
     </ClInclude>
     <ClInclude Include="src\Include\Interface.h" />
     <ClInclude Include="src\Include\LootContainers\Node.h" />
+    <ClInclude Include="src\Include\LootContainers\Handler\AbstractHandler.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Impl\Dispatch.cpp">
@@ -79,5 +74,7 @@
     <ClCompile Include="src\Impl\Dropt.cpp">
       <Filter>Impl</Filter>
     </ClCompile>
+    <ClCompile Include="src\Impl\AbstractHandler.cpp" />
+    <ClCompile Include="src\Include\LootContainers\LootBag\AbstractLootBag.cpp" />
   </ItemGroup>
 </Project>

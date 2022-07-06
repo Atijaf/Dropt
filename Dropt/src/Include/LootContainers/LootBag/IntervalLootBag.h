@@ -1,5 +1,5 @@
 #pragma once
-#include "AbstractLootBag.h"
+#include "LootBag.h"
 
 namespace Dropt {
 	namespace impl
@@ -13,15 +13,15 @@ namespace Dropt {
 		class CoreLootBagImpl<LootType, BagVariant, Variance::Interval> : public CoreLootBag<LootType, BagVariant, Variance::Interval>
 		{
 		public:
-			CoreLootBagImpl(uint32_t InitialSize, AbstractLootDispatcher* _Sibling) :
-				CoreLootBag<LootType, BagVariant,Variance::Interval>(InitialSize,_Sibling)
+			CoreLootBagImpl(uint32_t InitialSize, AbstractLootDispatcher* _Sister) :
+				CoreLootBag<LootType, BagVariant,Variance::Interval>(InitialSize,_Sister)
 			{
 			
 			};
 
 		protected:
 			virtual bool GrabLoot(std::list<LootType*>& OutLoot) override final;
-			virtual bool FinalizeLootBag() override final;
+			virtual bool PrepareLootToBeObtained() override final;
 			void ResetCounter();
 
 			bool bIsSorted = false;
@@ -29,9 +29,9 @@ namespace Dropt {
 		};
 
 		template<typename LootType, Variance BagVariant>
-		inline bool impl::CoreLootBagImpl<LootType, BagVariant, Variance::Interval>::FinalizeLootBag()
+		inline bool impl::CoreLootBagImpl<LootType, BagVariant, Variance::Interval>::PrepareLootToBeObtained()
 		{
-			if (!AbstractLootBag::FinalizeLootBag()) return false;
+			if (!AbstractLootBag::PrepareLootToBeObtained()) return false;
 
 			if (!bIsSorted) {
 				this->LootArray.Sort([](CoreLootContainer<LootType, Variance::Interval>* A, CoreLootContainer<LootType, Variance::Interval>* B)
@@ -44,9 +44,9 @@ namespace Dropt {
 		}
 
 		template<typename LootType, Variance BagVariant>
-		inline bool CoreLootBagImpl<LootType, BagVariant, Variance::Interval>::GrabLoot(std::list<LootType*>& OutLoot) {
-
-			uint32_t NumOfLootObtained = 0;
+		inline bool CoreLootBagImpl<LootType, BagVariant, Variance::Interval>::GrabLoot(std::list<LootType*>& OutLoot) 
+		{
+			bool bFoundLoot = false;
 			++GrabCounter;
 			uint32_t i = 0;
 			while (i < this->GetNumOfLoot()) {
@@ -64,7 +64,8 @@ namespace Dropt {
 				// Else, GrabCounter evenly goes into the Loot's Interval, 
 				// at Index I in LootArray, get that loot
 				else {
-					this->LootArray[i]->GetLoot(OutLoot);
+					if (this->LootArray[i]->GetLoot(OutLoot))
+						bFoundLoot = true;
 					// If we remove the index from the array, then we don't need to increment i
 					if (AbstractLootDispatcher::ShouldRemoveFromContainer(this->LootArray[i]))
 						this->RemoveIndexFromArray(i);
@@ -74,11 +75,10 @@ namespace Dropt {
 			}
 
 			// Lastly, if we obtained the last loot in the array, we should reset the counter
-			if (i == this->GetNumOfLoot() && this->GetNumOfLoot() > 0 &&
-				GrabCounter % this->LootArray[this->GetNumOfLoot() - 1]->GetInterval() == 0)
+			if (i == this->GetNumOfLoot() && this->GetNumOfLoot() > 0)
 				ResetCounter();
 
-			return (NumOfLootObtained > 0);
+			return bFoundLoot;
 		}
 
 
